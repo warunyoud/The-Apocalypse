@@ -9,14 +9,6 @@
 	(println "")
 	)
 	
-(defn print-message [pid pw] 
-(println "PID : " pid)
- (println "PW : " pw))
-
-(defn inp[]
-(println "Enter your PID and password") 
-(let[pid (read-line) pw (read-line)] 
-(print-message pid pw) ))
 
 (defrecord Person [fname health])
 
