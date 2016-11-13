@@ -1,1 +1,1 @@
-# The Apocalypse - Life after CS225
+# The Apocalypse - Life after CS 225
