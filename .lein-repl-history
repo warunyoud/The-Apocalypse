@@ -33,3 +33,44 @@ x[1]
 (assoc x 0 2)
 (= x (assoc x 0 2))
 exit
+repeat 5
+(repeat 5 0)
+(nth (repeat 5 0) 2)
+exit
+(def arr [1,2,3])
+(nth arr 3)
+(nth arr 2)
+((nth arr 2) inc)
+(inc (nth arr 2))
+(assoc-in (nth arr 2))
+(inc (nth arr 2))
+(def x 0)
+(update x 2)
+(update x 2 inc))
+(update x nil inc)
+arr
+(update arr 1 inc)
+arr
+(def arr (update 1 inc))
+(def arr (update arr 1 inc))
+arr
+(assoc 
+x 2)
+(assoc arr 0 2)
+arr
+(defn map {:arr [1,2,3]})
+(def map {:arr [1,2,3]})
+map
+(update-in map [:arr] [1,2,3,4])
+(update-in map [:arr] inc)
+(defn map {:arr [1,2,3] :life 0})
+map
+(def map {:arr [1,2,3] :life 0})
+(update-in map [:life] inc)
+map
+(def arr #[])
+(def arr #{})
+arr
+(var foo})
+(var foo)
+exit

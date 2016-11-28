@@ -29,24 +29,13 @@
     (println)
   )
 
-(defn read-maze [file-name, arr]
-  (let [n 0]
-  (with-open [rdr (clojure.java.io/reader file-name)]
-    (doseq [line (line-seq rdr)]
-      (doseq [i (range (count line))]
-        (= arr (assoc arr n (subs line i (+ i 1))))
-        (= n (inc n))
-        )
-      )
-    ) 
-    (print-maze arr 3 3)
-  ))
 ; (def maze-array
 ;   {:grainger {:array (read-maze "grainger.txt")
-;           :entrance [{:x 5 :y 8 :map grainger-north-entrance
-;             },{:x 10 :y 15 :map grainger-south-entrance
-;             }
-;           ]}
+;           ; :entrance [{:x 5 :y 8 :map grainger-north-entrance
+;           ;   },{:x 10 :y 15 :map grainger-south-entrance
+;           ;   }
+;           ; ]
+;         }
 ;   }
 ;   )
 
@@ -77,19 +66,14 @@
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
-<<<<<<< HEAD
-  (def arr [0,0,0,0,0,0,0,0,0])
-  (read-maze "src/the_apocalypse/text.txt" arr)
+  (def arr [0,1,0,0,0,0,0,0,0])
+  (read-maze "src/the_apocalypse/text.txt" [0,1,0,0,0,0,0,0,0])
   ;(print-maze arr 3 3)
   ; (print-many-lines 30)
   ; (println-typing "THE APOCALYPSE - LIFE AFTER CS 225" 50)
   ; (print-typing "Welcome to UIUC in the year of 2020" 50)
   ; (println-typing "..." 300)
   ; (println-typing "after the aftermath of CS 225" 100)
-=======
-  (printTyping "Enter your name")
-  (printTyping "Go back")
->>>>>>> eaef64612bf474d4e16c826f274c7bf2c1ac7a57
   )
 
 
