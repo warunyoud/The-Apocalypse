@@ -33,6 +33,9 @@ x[1]
 (assoc x 0 2)
 (= x (assoc x 0 2))
 exit
+<<<<<<< HEAD
+ls
+=======
 repeat 5
 (repeat 5 0)
 (nth (repeat 5 0) 2)
@@ -74,3 +77,4 @@ arr
 (var foo})
 (var foo)
 exit
+>>>>>>> refs/remotes/origin/master
