@@ -77,7 +77,7 @@
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
-<<<<<<< HEAD
+;<<<<<<< HEAD
   (def arr [0,0,0,0,0,0,0,0,0])
   (read-maze "src/the_apocalypse/text.txt" arr)
   ;(print-maze arr 3 3)
@@ -86,10 +86,10 @@
   ; (print-typing "Welcome to UIUC in the year of 2020" 50)
   ; (println-typing "..." 300)
   ; (println-typing "after the aftermath of CS 225" 100)
-=======
-  (printTyping "Enter your name")
-  (printTyping "Go back")
->>>>>>> eaef64612bf474d4e16c826f274c7bf2c1ac7a57
+;=======
+  ;(printTyping "Enter your name")
+  ;(printTyping "Go back")
+;>>>>>>> eaef64612bf474d4e16c826f274c7bf2c1ac7a57
   )
 
 

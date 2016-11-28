@@ -33,3 +33,4 @@ x[1]
 (assoc x 0 2)
 (= x (assoc x 0 2))
 exit
+ls
