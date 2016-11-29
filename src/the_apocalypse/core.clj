@@ -40,7 +40,7 @@
                          0,0,0]
               :width 3
               :height 3
-          :connection [{:x1 0 :y1 0 :maze second_room :x2 1 :y2 2
+          :connection [{:x1 2 :y1 3 :maze second_room :x2 1 :y2 2
             },{:x1 1 :y 2 :maze third_room :x2 0 :y2 2
             }
           ]
@@ -55,7 +55,7 @@
                          0,0,0]
               :width 3
               :height 3
-          :connection [{:x1 0 :y1 0 :maze second_room :x2 1 :y2 2
+          :connection [{:x1 1 :y1 2 :maze second_room :x2 0 :y2 0
             },{:x1 1 :y 2 :maze third_room :x2 0 :y2 2
             }
           ]
@@ -63,8 +63,11 @@
     }
   )
 
+(defn can_travel [player]
+  )
+
 (def adventurer
-  {:location :grainger
+  {:location :first_room
    :inventory #{}
    :seen #{}
    :x
