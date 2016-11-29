@@ -64,6 +64,14 @@
   )
 
 (defn can_travel [player]
+  ;for downWall -check at n
+  ;for upWall - check at n-width
+  ;for leftwall - check at n-1 rightwall
+  ;for rightwall - check at n rightwall
+  ;for left boundaries - check at (n)%width 
+  ;for right boundaries - check at (n+1)%width
+  ;for up boundaries - check n < width
+  ;for down boudaries - check at ?
   )
 
 (def adventurer
