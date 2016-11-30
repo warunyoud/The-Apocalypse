@@ -110,7 +110,7 @@
 ;need to decide if we are doing curr_loc as a single array from 0-n-1 or x and y coordinates
 (defn p_movement [player dir curr_loc]
   (let [loc (player :location)
-    dest (-> the-maze location :dir)]
+    dest (-> the-maze loc :dir)]
     (cond (and (= dir 0) (can_travel player dir curr_loc)) (do (println-typing "Moving Left" 50) (- x 1))
           (and (= dir 1) (can_travel player dir curr_loc)) (do (println-typing "Moving Right" 50) (+ x 1))
           (and (= dir 2) (can_travel player dir curr_loc)) (do (println-typing "Moving Up" 50) (- y height))
