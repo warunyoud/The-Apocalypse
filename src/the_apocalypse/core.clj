@@ -111,8 +111,8 @@
 (defn p_movement [player dir curr_loc]
   (let [loc (player :location)
     dest (-> the-maze loc :dir)]
-    (cond (and (= dir 0) (can_travel player dir curr_loc)) (do (println-typing "Moving Left" 50) (- x 1))
-          (and (= dir 1) (can_travel player dir curr_loc)) (do (println-typing "Moving Right" 50) (+ x 1))
+    (cond (and (= dir 0) (can_travel player dir curr_loc)) (do (println-typing "Moving Left" 50) (- x 1)) ;should I change this to n instead of x and 
+          (and (= dir 1) (can_travel player dir curr_loc)) (do (println-typing "Moving Right" 50) (+ x 1)) ;y coordinates?
           (and (= dir 2) (can_travel player dir curr_loc)) (do (println-typing "Moving Up" 50) (- y height))
           (and (= dir 3) (can_travel player dir curr_loc)) (do (println-typing "Moving Left" 50) (+ y height))
           :else (println-typing "Wrong Direction" 50))
