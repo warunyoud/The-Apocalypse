@@ -1,4 +1,6 @@
 (ns the-apocalypse.core
+  (:require [clojure.core.match :refer [match]]
+    [clojure.string :as str])
   (:gen-class))
 
 (defn print-typing [text waittime]
@@ -117,7 +119,6 @@
 (def adventurer
   {:location :first_room
    :inventory #{}
-   :seen #{}
    :n 0})
 
 (defn status [player]
@@ -129,6 +130,24 @@
   (player)
 )
 
+(defn go [dir player]
+  (if (= dir 0) (update-in player [:n] inc)))
+
+(defn respond [player command]
+  (match command
+         ; [:look] (update-in player [:seen] #(disj % (-> player :location)))
+         (:or [:e] [:east] ) (go 0 player)
+         [:south] (do (println "Nice.")
+               player)
+
+         _ (do (println "I don't understand you.")
+               player)
+
+         )) 
+
+(defn to-keywords [commands]
+  (mapv keyword (str/split commands #"[.,?! ]+")))
+
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
@@ -137,7 +156,8 @@
         (let [_ (println-typing "What do you want to do?" 50) 
           command (read-line)]
           (print-maze local-player)
-      (recur local-maze local-player))))
+          (print command)
+      (recur local-maze (respond local-player (to-keywords command))))))
 
 
   ;(print-maze arr 3 3)
