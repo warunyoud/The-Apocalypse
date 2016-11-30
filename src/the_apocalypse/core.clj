@@ -131,14 +131,18 @@
 )
 
 (defn go [dir player]
+  (if (= dir 0) (update-in player [:n] inc))
+  (if (= dir 0) (update-in player [:n] inc))
+  (if (= dir 0) (update-in player [:n] inc))
   (if (= dir 0) (update-in player [:n] inc)))
 
 (defn respond [player command]
   (match command
          ; [:look] (update-in player [:seen] #(disj % (-> player :location)))
          (:or [:e] [:east] ) (go 0 player)
-         [:south] (do (println "Nice.")
-               player)
+         (:or [:s] [:south] ) (go 1 player)
+         (:or [:w] [:west] ) (go 2 player)
+         (:or [:n] [:north] ) (go 3 player)
 
          _ (do (println "I don't understand you.")
                player)
@@ -153,10 +157,10 @@
   [& args]
   (loop [local-maze the-maze
          local-player adventurer]
-        (let [_ (println-typing "What do you want to do?" 50) 
+        (let [_ (print-maze local-player)
+              _ (println-typing "What do you want to do?" 50) 
           command (read-line)]
-          (print-maze local-player)
-          (print command)
+          
       (recur local-maze (respond local-player (to-keywords command))))))
 
 
