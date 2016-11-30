@@ -123,33 +123,42 @@
 
 
 ;Here I have used the curr_location as a single vector location
-; (defn can_travel [player dir]
-;   (let [loc (player :location)
-;         curr_loc (player :n)
-;         rightWall (-> the-maze loc :rightWall)
-;         downWall (-> the-maze loc :downWall)
-;         width (-> the-maze loc :width)
-;         height (-> the-maze loc :height)]
-;     (if (= dir 0) (if (or (= (mod curr_loc width) 0) (= (nth rightWall (- curr_loc 1)) 1)) (println-typing "Wall Ahead! Can't go left" 50) (println-typing "Can go left" 50)))
-;     (if (= dir 1) (if (or (= (mod (+ curr_loc 1) width) 0) (= (nth rightWall curr_loc) 1)) (println-typing "Wall Ahead! Can't go right" 50) (println-typing "Can go right" 50)))
-;     (if (= dir 2) (if (or (< curr_loc width) (= (nth downWall (- curr_loc width) 1))) (println-typing "Wall Ahead! Can't go up" 50) (println-typing "Can go up" 50)))
-;     (if (= dir 3) (if (or (< (+ curr_loc width) (* width height)) (= (nth downWall curr_loc) 1)) (println-typing "Wall Ahead! Can't go down" 50) (println-typing "Can go down" 50)))
-;     )
-  ; 0 ->left
-  ; 1 ->right
-  ; 2 ->up
-  ; 3 ->down
-  ;for downWall -check at n
-  ;for upWall - check at n-width
-  ;for leftwall - check at n-1 rightwall
-  ;for rightwall - check at n rightwall
-  ;for left boundaries - check at (n)%width 
-  ;for right boundaries - check at (n+1)%width
-  ;for up boundaries - check n < width
-  ;for down boudaries - check at ?
-; )
+(defn can_travel [player dir]
+  (let [loc (player :location)
+        curr_loc (player :n)
+        rightWall (-> the-maze loc :rightWall)
+        downWall (-> the-maze loc :downWall)
+        width (-> the-maze loc :width)
+        height (-> the-maze loc :height)] 
+    (cond (= dir 2) (not (or (= (mod curr_loc width) 0) (= (nth rightWall (- curr_loc 1)) 1)))
 
+    (= dir 0) (not (or (= (mod (+ curr_loc 1) width) 0) (= (nth rightWall curr_loc) 1)))
 
+    (= dir 3) (not (or (< curr_loc width) (= (nth downWall (- curr_loc width)) 1)))
+
+    (= dir 1) (not (or (>= (+ curr_loc width) (* width height)) (= (nth downWall curr_loc) 1)))
+
+    ))
+  ; 0 ->right
+  ; 1 ->down
+  ; 2 ->left
+  ; 3 ->up
+  ; for downWall -check at n
+  ; for upWall - check at n-width
+  ; for leftwall - check at n-1 rightwall
+  ; for rightwall - check at n rightwall
+  ; for left boundaries - check at (n)%width 
+  ; for right boundaries - check at (n+1)%width
+  ; for up boundaries - check n < width
+  ; for down boudaries - check at ?
+)
+
+    ; (cond (and (= dir 2) (or (= (mod curr_loc width) 0) (= (nth rightWall (- curr_loc 1)) 1))) 
+    ;   ((do (println-typing "Wall Ahead! Can't go left" 50) false)) :else (do (println-typing "Can go left" 50) true))
+    
+    ; (cond (and (= dir 0) (or (= (mod (+ curr_loc 1) width) 0) (= (nth rightWall curr_loc) 1)))
+    ;   ((do (println-typing "Wall Ahead! Can't go right" 50) false) (do (println-typing "Can go right" 50) true)))
+ 
 (def adventurer
   {:location :first_room
    :inventory #{}
@@ -165,15 +174,22 @@
 )
 
 (defn go [dir player]
+  (let [loc (player :location)
+        width (-> the-maze loc :width)] 
+  (if (not (can_travel player dir)) (do (println "Can't go there. There is a wall") player)
   (cond (= dir 0) (update-in player [:n] inc)
-    (= dir 1) (update-in player [:n] inc)
+    (= dir 1) (update-in player [:n] + width)
+    (= dir 3) (update-in player [:n] - width)
     (= dir 2) (update-in player [:n] dec)
-    (= dir 3) (update-in player [:n] inc)))
+
+    ))))
 
 (defn respond [player command]
   (match command
          ; [:look] (update-in player [:seen] #(disj % (-> player :location)))
-         (:or [:e] [:east] ) (go 0 player)
+         [:east] (go 0 player)
+         [:south] (go 1 player)
+         [:north] (go 3 player)
          [:west] (go 2 player)
 
          _ (do (println "I don't understand you.")
