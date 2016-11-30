@@ -89,7 +89,7 @@
     ;top
     (if (= (mod i width) 0) (do (if (= i 0) (println) (println "|")) (print "|")
 
-    (doseq [j (range 0 width)] (print "   ")
+    (doseq [j (range 0 width)] (if (= (player :n) (+ j i)) (print "X  ") (print "   "))
     (if (= (nth rightWall (+ j i)) 1) (print "|") (if (not= j (- width 1)) (print " "))))
 
     (println "|") (print "|")))
@@ -153,8 +153,7 @@
   {:location :first_room
    :inventory #{}
    :seen #{}
-   :x
-   :y})
+   :n 0})
 
 (defn status [player]
   ; (let [location (player :location)]
