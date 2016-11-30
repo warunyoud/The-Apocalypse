@@ -73,6 +73,7 @@
     }
   )
 
+
 (defn print-maze [player]
   (let [loc (player :location)
         rightWall (-> the-maze loc :rightWall)
@@ -103,7 +104,40 @@
   (println))
 
 
-(defn can_travel [player]
+; need a start location for first room
+;this function checks if the player can move in a particular direction by using can_travel and makes him move accordingly
+;also prompts the player for the direction to move in and updates accordingly
+;need to decide if we are doing curr_loc as a single array from 0-n-1 or x and y coordinates
+(defn p_movement [player dir curr_loc]
+  (let [loc (player :location)
+    dest (-> the-maze location :dir)]
+    (cond (and (= dir 0) (can_travel player dir curr_loc)) (do (println-typing "Moving Left" 50) (- x 1))
+          (and (= dir 1) (can_travel player dir curr_loc)) (do (println-typing "Moving Right" 50) (+ x 1))
+          (and (= dir 2) (can_travel player dir curr_loc)) (do (println-typing "Moving Up" 50) (- y height))
+          (and (= dir 3) (can_travel player dir curr_loc)) (do (println-typing "Moving Left" 50) (+ y height))
+          :else (println-typing "Wrong Direction" 50))
+    ;Here I have updated the location as per the x and y coordinates
+  )
+) 
+          
+
+
+;Here I have used the curr_location as a single vector location
+(defn can_travel [player dir curr_loc]
+  (let [loc (player :location)
+        rightWall (-> the-maze loc :rightWall)
+        downWall (-> the-maze loc :downWall)
+        width (-> the-maze loc :width)
+        height (-> the-maze loc :height)]
+    (if (= dir 0) (if (or (= (mod curr_loc width) 0) (= (nth rightWall (- curr_loc 1)) 1)) (println-typing "Wall Ahead! Can't go left" 50) (println-typing "Can go left" 50)))
+    (if (= dir 1) (if (or (= (mod (+ curr_loc 1) width) 0) (= (nth rightWall curr_loc) 1)) (println-typing "Wall Ahead! Can't go right" 50) (println-typing "Can go right" 50)))
+    (if (= dir 2) (if (or (< curr_loc width) (= (nth downWall (- curr_loc width) 1))) (println-typing "Wall Ahead! Can't go up" 50) (println-typing "Can go up" 50)))
+    (if (= dir 3) (if (or (< (+ curr_loc width) (* width height)) (= (nth downWall curr_loc) 1)) (println-typing "Wall Ahead! Can't go down" 50) (println-typing "Can go down" 50)))
+    )
+  ; 0 ->left
+  ; 1 ->right
+  ; 2 ->up
+  ; 3 ->down
   ;for downWall -check at n
   ;for upWall - check at n-width
   ;for leftwall - check at n-1 rightwall
@@ -112,7 +146,8 @@
   ;for right boundaries - check at (n+1)%width
   ;for up boundaries - check n < width
   ;for down boudaries - check at ?
-  )
+)
+
 
 (def adventurer
   {:location :first_room
