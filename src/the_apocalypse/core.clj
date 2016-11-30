@@ -110,32 +110,33 @@
 ;this function checks if the player can move in a particular direction by using can_travel and makes him move accordingly
 ;also prompts the player for the direction to move in and updates accordingly
 ;need to decide if we are doing curr_loc as a single array from 0-n-1 or x and y coordinates
-(defn p_movement [player dir curr_loc]
-  (let [loc (player :location)
-    dest (-> the-maze loc :dir)]
-    (cond (and (= dir 0) (can_travel player dir curr_loc)) (do (println-typing "Moving Left" 50) (- x 1)) ;should I change this to n instead of x and 
-          (and (= dir 1) (can_travel player dir curr_loc)) (do (println-typing "Moving Right" 50) (+ x 1)) ;y coordinates?
-          (and (= dir 2) (can_travel player dir curr_loc)) (do (println-typing "Moving Up" 50) (- y height))
-          (and (= dir 3) (can_travel player dir curr_loc)) (do (println-typing "Moving Left" 50) (+ y height))
-          :else (println-typing "Wrong Direction" 50))
-    ;Here I have updated the location as per the x and y coordinates
-  )
-) 
+; (defn p_movement [player dir curr_loc]
+;   (let [loc (player :location)
+;     dest (-> the-maze loc :dir)]
+;     (cond (and (= dir 0) (can_travel player dir curr_loc)) (do (println-typing "Moving Left" 50) (- x 1)) ;should I change this to n instead of x and 
+;           (and (= dir 1) (can_travel player dir curr_loc)) (do (println-typing "Moving Right" 50) (+ x 1)) ;y coordinates?
+;           (and (= dir 2) (can_travel player dir curr_loc)) (do (println-typing "Moving Up" 50) (- y height))
+;           (and (= dir 3) (can_travel player dir curr_loc)) (do (println-typing "Moving Left" 50) (+ y height))
+;           :else (println-typing "Wrong Direction" 50))
+;     ;Here I have updated the location as per the x and y coordinates
+;   )
+; ) 
           
 
 
 ;Here I have used the curr_location as a single vector location
-(defn can_travel [player dir curr_loc]
-  (let [loc (player :location)
-        rightWall (-> the-maze loc :rightWall)
-        downWall (-> the-maze loc :downWall)
-        width (-> the-maze loc :width)
-        height (-> the-maze loc :height)]
-    (if (= dir 0) (if (or (= (mod curr_loc width) 0) (= (nth rightWall (- curr_loc 1)) 1)) (println-typing "Wall Ahead! Can't go left" 50) (println-typing "Can go left" 50)))
-    (if (= dir 1) (if (or (= (mod (+ curr_loc 1) width) 0) (= (nth rightWall curr_loc) 1)) (println-typing "Wall Ahead! Can't go right" 50) (println-typing "Can go right" 50)))
-    (if (= dir 2) (if (or (< curr_loc width) (= (nth downWall (- curr_loc width) 1))) (println-typing "Wall Ahead! Can't go up" 50) (println-typing "Can go up" 50)))
-    (if (= dir 3) (if (or (< (+ curr_loc width) (* width height)) (= (nth downWall curr_loc) 1)) (println-typing "Wall Ahead! Can't go down" 50) (println-typing "Can go down" 50)))
-    )
+; (defn can_travel [player dir]
+;   (let [loc (player :location)
+;         curr_loc (player :n)
+;         rightWall (-> the-maze loc :rightWall)
+;         downWall (-> the-maze loc :downWall)
+;         width (-> the-maze loc :width)
+;         height (-> the-maze loc :height)]
+;     (if (= dir 0) (if (or (= (mod curr_loc width) 0) (= (nth rightWall (- curr_loc 1)) 1)) (println-typing "Wall Ahead! Can't go left" 50) (println-typing "Can go left" 50)))
+;     (if (= dir 1) (if (or (= (mod (+ curr_loc 1) width) 0) (= (nth rightWall curr_loc) 1)) (println-typing "Wall Ahead! Can't go right" 50) (println-typing "Can go right" 50)))
+;     (if (= dir 2) (if (or (< curr_loc width) (= (nth downWall (- curr_loc width) 1))) (println-typing "Wall Ahead! Can't go up" 50) (println-typing "Can go up" 50)))
+;     (if (= dir 3) (if (or (< (+ curr_loc width) (* width height)) (= (nth downWall curr_loc) 1)) (println-typing "Wall Ahead! Can't go down" 50) (println-typing "Can go down" 50)))
+;     )
   ; 0 ->left
   ; 1 ->right
   ; 2 ->up
@@ -148,7 +149,7 @@
   ;for right boundaries - check at (n+1)%width
   ;for up boundaries - check n < width
   ;for down boudaries - check at ?
-)
+; )
 
 
 (def adventurer
@@ -166,18 +167,16 @@
 )
 
 (defn go [dir player]
-  (if (= dir 0) (update-in player [:n] inc))
-  (if (= dir 0) (update-in player [:n] inc))
-  (if (= dir 0) (update-in player [:n] inc))
-  (if (= dir 0) (update-in player [:n] inc)))
+  (cond (= dir 0) (update-in player [:n] inc)
+    (= dir 1) (update-in player [:n] inc)
+    (= dir 2) (update-in player [:n] dec)
+    (= dir 3) (update-in player [:n] inc)))
 
 (defn respond [player command]
   (match command
          ; [:look] (update-in player [:seen] #(disj % (-> player :location)))
          (:or [:e] [:east] ) (go 0 player)
-         (:or [:s] [:south] ) (go 1 player)
-         (:or [:w] [:west] ) (go 2 player)
-         (:or [:n] [:north] ) (go 3 player)
+         [:west] (go 2 player)
 
          _ (do (println "I don't understand you.")
                player)
