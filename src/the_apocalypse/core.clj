@@ -37,10 +37,8 @@
                          0,0,0]
               :width 3
               :height 3
-          :connection [{:x1 2 :y1 3 :maze :second_room :x2 1 :y2 2
-            },{:x1 1 :y 2 :maze :third_room :x2 0 :y2 2
-            }
-          ]
+          :exit 5
+          :key 2
         }
   :second_room {:desc "best building"
               :title "second_room"
