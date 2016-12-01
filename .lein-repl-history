@@ -74,3 +74,6 @@ arr
 (var foo})
 (var foo)
 exit
+(println "\\ABC")
+(println "\\")
+exit

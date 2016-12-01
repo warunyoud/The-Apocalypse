@@ -3,6 +3,8 @@
     [clojure.string :as str])
   (:gen-class))
 
+;special thanks Normand Veilleux (key pic)
+
 (defn print-typing [text waittime]
 	(doseq [i (range (count text))]
 		(print (subs text i (+ i 1)))
@@ -28,17 +30,18 @@
 
 (def the-maze
   {:first_room {:desc "best building"
-              :title "first_room"
-              :rightWall [0,0,0,
-                          1,1,0,
-                          0,1,0]
-              :downWall [0,1,0,
-                         0,0,0
-                         0,0,0]
-              :width 3
+              :title "Floor: B-5"
+              :rightWall [0,0,1,0
+                          1,1,0,0
+                          0,1,0,0]
+              :downWall [0,1,0,0
+                         0,0,0,1
+                         0,0,0,0]
+              :width 4
               :height 3
           :exit 5
-          :key 2
+          :key 3
+          :map 11
         }
   :second_room {:desc "best building"
               :title "second_room"
@@ -89,7 +92,9 @@
     ;top
     (if (= (mod i width) 0) (do (if (= i 0) (println) (println "|")) (print "|")
 
-    (doseq [j (range 0 width)] (if (= (player :n) (+ j i)) (print "X  ") (print "   "))
+    (doseq [j (range 0 width)] (cond (= (player :n) (+ j i)) (print "X  ") (and (= (-> the-maze loc :key) (+ j i)) (not (player :has-key))) (print "key") 
+      (= (-> the-maze loc :exit) (+ j i)) (print "ext")
+      (and (= (-> the-maze loc :map) (+ j i)) (not (player :has-map))) (print "map") :else (print "   "))
     (if (= (nth rightWall (+ j i)) 1) (print "|") (if (not= j (- width 1)) (print " "))))
 
     (println "|") (print "|")))
@@ -161,28 +166,101 @@
  
 (def adventurer
   {:location :first_room
-   :inventory #{}
+   :has-key false
+   :has-map false
    :n 0})
 
+
+(defn to-keywords [commands]
+  (mapv keyword (str/split commands #"[.,?! ]+")))
+
+
 (defn status [player]
-  ; (let [location (player :location)]
-  ;   (print (str "You are " (-> the-map location :title) ". "))
+  (let [loc (player :location)
+      keyloc (-> the-maze loc :key)
+      maploc (-> the-maze loc :map)
+      exitloc (-> the-maze loc :exit)
+      east (can_travel player 0)
+      south (can_travel player 1)
+      west (can_travel player 2)
+      north (can_travel player 3)]
+    (println)
+    (println "=============================")
+    (println (-> the-maze loc :title))
+    (println "=============================")
+    (cond (and east south west north) (println-typing "You are in an open area." 40)
+      (and south west north) (println-typing "You are at an edge. There is a wall east of you." 40)
+      (and east west north) (println-typing "You are at an edge. There is a wall south of you." 40)
+      (and east south north) (println-typing "You are at an edge. There is a wall west of you." 40)
+      (and east south west) (println-typing "You are at an edge. There is a wall north of you." 40)
+      (and east south) (println-typing "You are at a corner. There are walls surrounding north and west." 40)
+      (and east north) (println-typing "You are at a corner. There are walls surrounding south and west." 40)
+      (and west south) (println-typing "You are at a corner. There are walls surrounding north and east." 40)
+      (and west north) (println-typing "You are at a corner. There are walls surrounding south and east." 40)
+      (and south north) (println-typing "You are in an alley. Either head north or south" 40)
+      (and west east) (println-typing "You are in an alley. Either head east or west." 40)
+      (and east) (println-typing "You are at a dead end. You might as well move east." 40)
+      (and south) (println-typing "You are at a dead end. You might as well move south." 40)
+      (and west) (println-typing "You are at a dead end. You might as well move west." 40)
+      (and north) (println-typing "You are at a dead end. You might as well move north." 40)
+      )
+
+    (cond (and (= keyloc (player :n)) (not (player :has-key))) (do (println-typing "There is a key on the floor." 40) (println 
+"\n  ad8888888888ba
+ dP'         `\"8b,
+ 8  ,aaa,       \"Y888a     ,aaaa,     ,aaa,  ,aa,
+ 8  8' `8           \"88baadP\"\"\"\"YbaaadP\"\"\"YbdP\"\"Yb
+ 8  8   8              \"\"\"        \"\"\"      \"\"    8b
+ 8  8, ,8         ,aaaaaaaaaaaaaaaaaaaaaaaaddddd88P
+ 8  `\"\"\"'       ,d8\"\"
+ Yb,         ,ad8\"    
+  \"Y8888888888P\"\n") (println-typing "Do you want to take it?" 20) 
+      (match (to-keywords (read-line)) 
+        [:yes] (do (println-typing "Key taken!" 40) (assoc-in player [:has-key] true))
+        _ player))
+
+    (and (= maploc (player :n)) (not (player :has-map))) (do (println-typing "There is a map on the floor." 40)(println 
+"     
+     _____________________________________________
+()==(                                            (@==()
+    '____________________________________________'|
+       |                                          |
+       |          _ __ ___   __ _ _ __  ___       |
+       | (•_•)   | '_ ` _ \\ / _` | '_ \\/ __|      |
+       | <)  )╯  | | | | | | (_| | |_) \\__ \\      |
+       |  /  \\   |_| |_| |_|\\__,_| .__/|___/      |
+       |                         | |              |
+       |                         |_|              |
+       |                                          |
+     __)__________________________________________|
+()==(                                            (@==()
+     '--------------------------------------------'      \n")
+      (println-typing "Do you want to take it?" 20) 
+      (match (to-keywords (read-line)) 
+        [:yes] (do (println-typing "You have obtained a map! to use the map type 'use map'" 40)(assoc-in player [:has-map] true))
+        _ player))
+
+     (= exitloc (player :n)) (do (println "You have found the EXIT!!") (println "Do you want to open it?") (match (to-keywords (read-line)) 
+        [:yes] (do (if (player :has-key) (do (println "You have used your key to unlock the exit door.") player) (do (println "It's locked!") player)))
+        _ player))
+     :else player)
   ;   (when-not ((player :seen) location)
   ;     (print (-> the-map location :desc)))
-  ;   (update-in player [:seen] #(conj % location)))
-  (player)
+    )
+  
 )
 
 (defn go [dir player]
   (let [loc (player :location)
         width (-> the-maze loc :width)] 
-  (if (not (can_travel player dir)) (do (println "Can't go there. There is a wall") player)
+  (if (not (can_travel player dir)) (do (println "Can't go there. There is a wall.") player)
   (cond (= dir 0) (update-in player [:n] inc)
     (= dir 1) (update-in player [:n] + width)
     (= dir 3) (update-in player [:n] - width)
     (= dir 2) (update-in player [:n] dec)
 
     ))))
+
 
 (defn respond [player command]
   (match command
@@ -191,25 +269,32 @@
          [:south] (go 1 player)
          [:north] (go 3 player)
          [:west] (go 2 player)
+         [:use :map] (do (if (player :has-map) (print-maze player) (println "You don't have a map yet.")) player)
 
          _ (do (println "I don't understand you.")
                player)
 
          )) 
 
-(defn to-keywords [commands]
-  (mapv keyword (str/split commands #"[.,?! ]+")))
-
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
+  (println)
+  (println-typing "Welcome to ...." 30)
+  (println "
+.-. . . .-.   .-. .-. .-. .-. .-. .   . . .-. .-. .-. 
+ |  |-| |-    |-| |-' | | |   |-| |    |  |-' `-. |-  
+ '  ' ` `-'   ` ' '   `-' `-' ` ' `-'  `  '   `-' `-' 
+                                                     ")
+
   (loop [local-maze the-maze
          local-player adventurer]
-        (let [_ (print-maze local-player)
-              _ (println-typing "What do you want to do?" 50) 
+        (let [pl (status local-player)
+             ; _ (print-maze pl)
+              _ (println-typing "What do you want to do now?" 20) 
           command (read-line)]
           
-      (recur local-maze (respond local-player (to-keywords command))))))
+      (recur local-maze (respond pl (to-keywords command))))))
 
 
   ;(print-maze arr 3 3)
