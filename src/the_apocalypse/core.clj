@@ -124,10 +124,7 @@
 ;     ;Here I have updated the location as per the x and y coordinates
 ;   )
 ; ) 
-          
 
-
-;Here I have used the curr_location as a single vector location
 (defn can_travel [player dir]
   (let [loc (player :location)
         curr_loc (player :n)
@@ -223,14 +220,14 @@
 "     
      _____________________________________________
 ()==(                                            (@==()
-    '____________________________________________'|
+     ____________________________________________'|
        |                                          |
-       |          _ __ ___   __ _ _ __  ___       |
-       | (•_•)   | '_ ` _ \\ / _` | '_ \\/ __|      |
-       | <)  )╯  | | | | | | (_| | |_) \\__ \\      |
-       |  /  \\   |_| |_| |_|\\__,_| .__/|___/      |
-       |                         | |              |
-       |                         |_|              |
+       |          _ __ ___    __ _ _ __           |
+       | (•_•)   | '_ ` _ \\ / _` | '_ \\         |
+       | <)  )╯  | | | | | |( |_| | |_) \\        |  
+       |  /  \\  |_| |_| |_|\\__,_| .__/          |
+       |                          | |             |
+       |                          |_|             |
        |                                          |
      __)__________________________________________|
 ()==(                                            (@==()
@@ -280,24 +277,37 @@
   "I don't do a whole lot ... yet."
   [& args]
   (println)
-  (println-typing "Welcome to ...." 30)
+  (println-typing " 
+ ___      ___           __                                    __          
+/   \\    /   \\  ____   |  |   ____   ____   _____   ____    _/  |_   ___  
+\\    \\/\\/   /  / __ \\  |  |  / ___\\ /  _ \\ /     \\_/  __\\  |      \\ / _  \\ 
+ \\         /  \\  ___/  |  |_ \\ \\__  ( <_> )  Y Y  \\  ___/    |  |  (  <_> )
+  \\__/\\   /    \\___ >  |____/ \\___ > ____/ |__| _| /\\___ >   |__|   \\____/ 
+       \\_/        \\/             \\/              \\/   \\/                " 15)
+
+
   (println-typing "                              
-=== = = ===   .-. .-. .=. .== .-. .  '. .' .--. .-= .== 
- |  |=| |=    |=| |=' | | |   |=| |    |   |--' `-. |=  
- =  = = ===   = = =   `=' `== = = `==  =   =    =-' `== 
-                                                     " 50)
+ _________________________________________________________________________
+|                                                                         |
+|         === = = ===   .-. .-. .=. .== .-. .  '. .' .--. .-= .==         |
+|          |  |=| |=    |=| |=' | | |   |=| |    |   |--' `-. |=          |
+|          =  = = ===   = = =   `=' `== = = `==  =   =    =-' `==         |
+|_________________________________________________________________________|" 
+15)
 
   (loop [local-maze the-maze
          local-player adventurer]
         (let [pl (status local-player)
              ; _ (print-maze pl)
-              _ (println-typing "What do you want to do now?" 20) 
+              _ (println-typing "What do you want to do now?" 20)
+                ;(println-typing "To move around please enter the direction you
+                  ;to move in [north/south/east/west]" 20) 
           command (read-line)]
           
       (recur local-maze (respond pl (to-keywords command))))))
 
 
-  ;(print-maze arr 3 3)
+  ; (print-maze arr 3 3)
   ; (print-many-lines 30)
   ; (println-typing "THE APOCALYPSE - LIFE AFTER CS 225" 50)
   ; (print-typing "Welcome to UIUC in the year of 2020" 50)
