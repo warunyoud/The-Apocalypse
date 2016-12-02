@@ -259,10 +259,14 @@
          [:w] (go 2 player)
          [:use :map] (do (if (player :has-map) (print-maze player) (println "You don't have a map yet.")) player)
 
-         _ (do (println "I don't understand you.")
+         _ (do (println "I don't understand you. If you are stuck, you can use a hint. BEWARE! Using a hint will 
+          take you to a random place in the maze. So use this wisely!")
                player)
 
-         )) 
+         ))
+
+;We should do a hints page which opens up when the player is stuck for too long. We can do something like he goes back to a random
+;position if he uses a hint.  
 
 (defn -main
   "I don't do a whole lot ... yet."
@@ -273,10 +277,10 @@
 
  ___      ___           __                                    __          
 /   \\    /   \\  ____   |  |   ____   ____   _____   ____    _/  |_   ___  
-\\    \\/\\/   /  / __ \\  |  |  / ___\\ /  _ \\ /     \\_/  __\\  |      \\ / _  \\ 
+\\    \\/\\/   /  / __ \\  |  |  / ___\\ /  _ \\ /     \\_/  __\\  |      \\ /  _ \\ 
  \\         /  \\  ___/  |  |_ \\ \\__  ( <_> )  Y Y  \\  ___/    |  |  (  <_> )
   \\__/\\   /    \\___ >  |____/ \\___ > ____/ |__| _| /\\___ >   |__|   \\____/ 
-       \\_/        \\/             \\/              \\/   \\/                " 15)
+       \\_/        \\/             \\/              \\/   \\/                " 10)
 
 
   (println-typing "                              
@@ -286,7 +290,7 @@
 |          |  |=| |=    |=| |=' | | |   |=| |    |   |--' `-. |=          |
 |          =  = = ===   = = =   `=' `== = = `==  =   =    =-' `==         |
 |_________________________________________________________________________|" 
-15)
+10)
   (println)
 
 (println-typing "                        
