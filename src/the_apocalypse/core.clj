@@ -42,6 +42,8 @@
           :exit 5
           :key 3
           :map 11
+          :nextmap :second_room
+          :nextn 3
         }
   :second_room {:desc "best building"
               :title "second_room"
@@ -53,10 +55,11 @@
                          0,0,0]
               :width 3
               :height 3
-          :connection [{:x1 1 :y1 2 :maze :first_room :x2 0 :y2 0
-            },{:x1 1 :y 2 :maze :third_room :x2 0 :y2 2
-            }
-          ]
+          :exit 1
+          :key 3
+          :map 5
+          :nextmap :second_room
+          :nextn 3
         }
     :third_room {:desc "best building"
               :title "third_room"
@@ -154,6 +157,15 @@
   (mapv keyword (str/split commands #"[.,?! ]+")))
 
 
+(defn move-to [player]
+  (let [loc (player :location)
+    nextmap (-> the-maze loc :nextmap)
+    nextn (-> the-maze loc :nextn)]
+
+
+  (assoc-in (assoc-in (assoc-in (assoc-in player [:has-map] false) [:has-key] false) [:location] nextmap) [:n] nextn))
+  )
+
 (defn status [player]
   (let [loc (player :location)
       keyloc (-> the-maze loc :key)
@@ -225,7 +237,7 @@
         _ player))
 
      (= exitloc (player :n)) (do (println "You have found the EXIT!!") (println "Do you want to open it?") (match (to-keywords (read-line)) 
-        [:yes] (do (if (player :has-key) (do (println "You have used your key to unlock the exit door.") player) (do (println "It's locked!") player)))
+        [:yes] (do (if (player :has-key) (do (println "You have used your key to unlock the exit door.") (move-to player)) (do (println "It's locked!") player)))
         _ player))
      :else player)
   ;   (when-not ((player :seen) location)
