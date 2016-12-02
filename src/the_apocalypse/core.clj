@@ -288,9 +288,10 @@
 |_________________________________________________________________________|" 
 15)
   (println)
-  
+
 (println-typing "                        
  _____________________________________________________________________________
+|                                                                             |
 | The Apocalypse is a game of adventure, danger and monsters.                 |
 | In this world you will explore some of the most amazing puzzles             |
 | and mazes ever seen by mortal man.                                          |
