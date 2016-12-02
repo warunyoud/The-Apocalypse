@@ -77,6 +77,8 @@
   )
 
 
+;Prints out the maze if the player finds the map in the maze
+
 (defn print-maze [player]
   (let [loc (player :location)
         rightWall (-> the-maze loc :rightWall)
@@ -109,25 +111,8 @@
   (println))
 
 
-; need a start location for first room
-;this function checks if the player can move in a particular direction by using can_travel and makes him move accordingly
-;also prompts the player for the direction to move in and updates accordingly
-;need to decide if we are doing curr_loc as a single array from 0-n-1 or x and y coordinates
-; (defn p_movement [player dir curr_loc]
-;   (let [loc (player :location)
-;     dest (-> the-maze loc :dir)]
-;     (cond (and (= dir 0) (can_travel player dir curr_loc)) (do (println-typing "Moving Left" 50) (- x 1)) ;should I change this to n instead of x and 
-;           (and (= dir 1) (can_travel player dir curr_loc)) (do (println-typing "Moving Right" 50) (+ x 1)) ;y coordinates?
-;           (and (= dir 2) (can_travel player dir curr_loc)) (do (println-typing "Moving Up" 50) (- y height))
-;           (and (= dir 3) (can_travel player dir curr_loc)) (do (println-typing "Moving Left" 50) (+ y height))
-;           :else (println-typing "Wrong Direction" 50))
-;     ;Here I have updated the location as per the x and y coordinates
-;   )
-; ) 
-          
+;this function checks if the player can travel in the maze
 
-
-;Here I have used the curr_location as a single vector location
 (defn can_travel [player dir]
   (let [loc (player :location)
         curr_loc (player :n)
@@ -157,12 +142,6 @@
   ; for up boundaries - check n < width
   ; for down boudaries - check at ?
 )
-
-    ; (cond (and (= dir 2) (or (= (mod curr_loc width) 0) (= (nth rightWall (- curr_loc 1)) 1))) 
-    ;   ((do (println-typing "Wall Ahead! Can't go left" 50) false)) :else (do (println-typing "Can go left" 50) true))
-    
-    ; (cond (and (= dir 0) (or (= (mod (+ curr_loc 1) width) 0) (= (nth rightWall curr_loc) 1)))
-    ;   ((do (println-typing "Wall Ahead! Can't go right" 50) false) (do (println-typing "Can go right" 50) true)))
  
 (def adventurer
   {:location :first_room
@@ -183,26 +162,30 @@
       east (can_travel player 0)
       south (can_travel player 1)
       west (can_travel player 2)
-      north (can_travel player 3)]
+      north (can_travel player 3)
+      e (can_travel player 0)
+      s (can_travel player 1)
+      w (can_travel player 2)
+      n (can_travel player 3)]
     (println)
     (println "=============================")
     (println (-> the-maze loc :title))
     (println "=============================")
-    (cond (and east south west north) (println-typing "You are in an open area." 40)
-      (and south west north) (println-typing "You are at an edge. There is a wall east of you." 40)
-      (and east west north) (println-typing "You are at an edge. There is a wall south of you." 40)
-      (and east south north) (println-typing "You are at an edge. There is a wall west of you." 40)
-      (and east south west) (println-typing "You are at an edge. There is a wall north of you." 40)
-      (and east south) (println-typing "You are at a corner. There are walls surrounding north and west." 40)
-      (and east north) (println-typing "You are at a corner. There are walls surrounding south and west." 40)
-      (and west south) (println-typing "You are at a corner. There are walls surrounding north and east." 40)
-      (and west north) (println-typing "You are at a corner. There are walls surrounding south and east." 40)
-      (and south north) (println-typing "You are in an alley. Either head north or south" 40)
-      (and west east) (println-typing "You are in an alley. Either head east or west." 40)
-      (and east) (println-typing "You are at a dead end. You might as well move east." 40)
-      (and south) (println-typing "You are at a dead end. You might as well move south." 40)
-      (and west) (println-typing "You are at a dead end. You might as well move west." 40)
-      (and north) (println-typing "You are at a dead end. You might as well move north." 40)
+    (cond (and (or east e) (or south s) (or west w) (or north n)) (println-typing "You are in an open area." 40)
+      (and (or s south) (or w west) (or n north)) (println-typing "You are at an edge. There is a wall east of you." 40)
+      (and (or e east) (or west w) (or n north)) (println-typing "You are at an edge. There is a wall south of you." 40)
+      (and (or e east) (or s south) (or n north)) (println-typing "You are at an edge. There is a wall west of you." 40)
+      (and (or e east) (or s south) (or w west)) (println-typing "You are at an edge. There is a wall north of you." 40)
+      (and (or e east) (or s south)) (println-typing "You are at a corner. There are walls surrounding north and west." 40)
+      (and (or e east) (or n north)) (println-typing "You are at a corner. There are walls surrounding south and west." 40)
+      (and (or w west) (or s south)) (println-typing "You are at a corner. There are walls surrounding north and east." 40)
+      (and (or w west) (or n north)) (println-typing "You are at a ceorner. There are walls surrounding south and east." 40)
+      (and (or s south) (or n north)) (println-typing "You are in an alley. Either head north or south" 40)
+      (and (or w west) (or e east)) (println-typing "You are in an alley. Either head east or west." 40)
+      (and (or e east)) (println-typing "You cannot move forward. You are at a dead end." 40)
+      (and (or s south)) (println-typing "You cannot move forward. You are at a dead end." 40)
+      (and (or w west)) (println-typing "You cannot move forward. You are at a dead end." 40)
+      (and (or n north)) (println-typing "You cannot move forward. You are at a dead end." 40)
       )
 
     (cond (and (= keyloc (player :n)) (not (player :has-key))) (do (println-typing "There is a key on the floor." 40) (println 
@@ -219,22 +202,23 @@
         [:yes] (do (println-typing "Key taken!" 40) (assoc-in player [:has-key] true))
         _ player))
 
-    (and (= maploc (player :n)) (not (player :has-map))) (do (println-typing "There is a map on the floor." 40)(println 
+    (and (= maploc (player :n)) (not (player :has-map))) (do (println-typing "There is a map on the floor." 40)(println     
 "     
      _____________________________________________
 ()==(                                            (@==()
-    '____________________________________________'|
+    (____________________________________________'|
        |                                          |
-       |          _ __ ___   __ _ _ __  ___       |
-       | (•_•)   | '_ ` _ \\ / _` | '_ \\/ __|      |
-       | <)  )╯  | | | | | | (_| | |_) \\__ \\      |
-       |  /  \\   |_| |_| |_|\\__,_| .__/|___/      |
+       |          _ __ ___    ___ _ __            |
+       | (•_•)   | '_ ` _ \\ / _  | _  \\           |
+       | <)  )╯  | | | | | ( |_| | |_) \\          |  
+       |  /  \\   |_| |_| |_|\\__,_| .__/           |
        |                         | |              |
        |                         |_|              |
        |                                          |
      __)__________________________________________|
 ()==(                                            (@==()
      '--------------------------------------------'      \n")
+
       (println-typing "Do you want to take it?" 20) 
       (match (to-keywords (read-line)) 
         [:yes] (do (println-typing "You have obtained a map! to use the map type 'use map'" 40)(assoc-in player [:has-map] true))
@@ -269,41 +253,73 @@
          [:south] (go 1 player)
          [:north] (go 3 player)
          [:west] (go 2 player)
+         [:e] (go 0 player)
+         [:s] (go 1 player)
+         [:n] (go 3 player)
+         [:w] (go 2 player)
          [:use :map] (do (if (player :has-map) (print-maze player) (println "You don't have a map yet.")) player)
 
-         _ (do (println "I don't understand you.")
+         _ (do (println "I don't understand you. If you are stuck, you can use a hint. BEWARE! Using a hint will 
+          take you to a random place in the maze. So use this wisely!")
                player)
 
-         )) 
+         ))
+
+;We should do a hints page which opens up when the player is stuck for too long. We can do something like he goes back to a random
+;position if he uses a hint.  
 
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
   (println)
-  (println-typing "Welcome to ...." 30)
-  (println-typing "                              
-=== = = ===   .-. .-. .=. .== .-. .  '. .' .--. .-= .== 
- |  |=| |=    |=| |=' | | |   |=| |    |   |--' `-. |=  
- =  = = ===   = = =   `=' `== = = `==  =   =    =-' `== 
-                                                     " 50)
 
+  (println-typing " 
+
+ ___      ___           __                                    __          
+/   \\    /   \\  ____   |  |   ____   ____   _____   ____    _/  |_   ___  
+\\    \\/\\/   /  / __ \\  |  |  / ___\\ /  _ \\ /     \\_/  __\\  |      \\ /  _ \\ 
+ \\         /  \\  ___/  |  |_ \\ \\__  ( <_> )  Y Y  \\  ___/    |  |  (  <_> )
+  \\__/\\   /    \\___ >  |____/ \\___ > ____/ |__| _| /\\___ >   |__|   \\____/ 
+       \\_/        \\/             \\/              \\/   \\/                " 10)
+
+
+  (println-typing "                              
+ _________________________________________________________________________
+|                                                                         |
+|         === = = ===   .-. .-. .=. .== .-. .  '. .' .--. .-= .==         |
+|          |  |=| |=    |=| |=' | | |   |=| |    |   |--' `-. |=          |
+|          =  = = ===   = = =   `=' `== = = `==  =   =    =-' `==         |
+|_________________________________________________________________________|" 
+10)
+  (println)
+
+(println-typing "                        
+ _____________________________________________________________________________
+|                                                                             |
+| The Apocalypse is a game of adventure, danger and monsters.                 |
+| In this world you will explore some of the most amazing puzzles             |
+| and mazes ever seen by mortal man.                                          |
+|                                                                             |
+| In Apocalypse the intrepid explorer finds himself in a lost labyrinth       |
+| of another world, searching for a door that will take him back              |
+| to his own world, his loved ones. But to find this door,                    |
+| the adventurer has to go through different mazes filled with                |
+| unknown creatures and traps!                                                |
+|                                                                             |
+| This game has been created by Shashank Bansal and Boom Dej-Udom.            |
+| Have fun! and let us know if you have any feedback at sbansal6@illinois.edu.|
+|                                                                             |
+|_____________________________________________________________________________|" 15)
   (loop [local-maze the-maze
          local-player adventurer]
         (let [pl (status local-player)
              ; _ (print-maze pl)
-              _ (println-typing "What do you want to do now?" 20) 
+              _ (println-typing "What do you want to do now?" 20)
+                ;(println-typing "To move around please enter the direction you
+                  ;to move in [north/south/east/west]" 20) 
           command (read-line)]
           
       (recur local-maze (respond pl (to-keywords command))))))
-
-
-  ;(print-maze arr 3 3)
-  ; (print-many-lines 30)
-  ; (println-typing "THE APOCALYPSE - LIFE AFTER CS 225" 50)
-  ; (print-typing "Welcome to UIUC in the year of 2020" 50)
-  ; (println-typing "..." 300)
-  ; (println-typing "after the aftermath of CS 225" 100)
-
 
 
 
