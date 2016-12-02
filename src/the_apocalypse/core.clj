@@ -179,7 +179,7 @@
       (and (or e east) (or s south)) (println-typing "You are at a corner. There are walls surrounding north and west." 40)
       (and (or e east) (or n north)) (println-typing "You are at a corner. There are walls surrounding south and west." 40)
       (and (or w west) (or s south)) (println-typing "You are at a corner. There are walls surrounding north and east." 40)
-      (and (or w west) (or n north)) (println-typing "You are at a corner. There are walls surrounding south and east." 40)
+      (and (or w west) (or n north)) (println-typing "You are at a ceorner. There are walls surrounding south and east." 40)
       (and (or s south) (or n north)) (println-typing "You are in an alley. Either head north or south" 40)
       (and (or w west) (or e east)) (println-typing "You are in an alley. Either head east or west." 40)
       (and (or e east)) (println-typing "You cannot move forward. You are at a dead end." 40)
@@ -259,8 +259,7 @@
          [:w] (go 2 player)
          [:use :map] (do (if (player :has-map) (print-maze player) (println "You don't have a map yet.")) player)
 
-         _ (do (println "I don't understand you. If you are stuck, you can use a hint. BEWARE! Using a hint will 
-          take you to a random place in the maze. So use this wisely!")
+         _ (do (println "I don't understand you. If you are stuck, you can use a hint. BEWARE! Using a hint will take you to a random place in the maze. So use this wisely!")
                player)
 
          ))
@@ -309,7 +308,8 @@
 | This game has been created by Shashank Bansal and Boom Dej-Udom.            |
 | Have fun! and let us know if you have any feedback at sbansal6@illinois.edu.|
 |                                                                             |
-|_____________________________________________________________________________|" 15)
+|_____________________________________________________________________________|" 10)
+  
   (loop [local-maze the-maze
          local-player adventurer]
         (let [pl (status local-player)
