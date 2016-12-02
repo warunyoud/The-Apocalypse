@@ -179,7 +179,7 @@
       (and (or e east) (or s south)) (println-typing "You are at a corner. There are walls surrounding north and west." 40)
       (and (or e east) (or n north)) (println-typing "You are at a corner. There are walls surrounding south and west." 40)
       (and (or w west) (or s south)) (println-typing "You are at a corner. There are walls surrounding north and east." 40)
-      (and (or w west) (or n north)) (println-typing "You are at a ceorner. There are walls surrounding south and east." 40)
+      (and (or w west) (or n north)) (println-typing "You are at a corner. There are walls surrounding south and east." 40)
       (and (or s south) (or n north)) (println-typing "You are in an alley. Either head north or south" 40)
       (and (or w west) (or e east)) (println-typing "You are in an alley. Either head east or west." 40)
       (and (or e east)) (println-typing "You cannot move forward. You are at a dead end." 40)
