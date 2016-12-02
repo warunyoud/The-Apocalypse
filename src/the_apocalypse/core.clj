@@ -222,12 +222,12 @@
 ()==(                                            (@==()
      ____________________________________________'|
        |                                          |
-       |          _ __ ___    __ _ _ __           |
-       | (•_•)   | '_ ` _ \\ / _` | '_ \\         |
-       | <)  )╯  | | | | | |( |_| | |_) \\        |  
-       |  /  \\  |_| |_| |_|\\__,_| .__/          |
-       |                          | |             |
-       |                          |_|             |
+       |          _ __ ___    ___ _ __            |
+       | (•_•)   | '_ ` _ \\ / _  | _  \\           |
+       | <)  )╯  | | | | | ( |_| | |_) \\          |  
+       |  /  \\   |_| |_| |_|\\__,_| .__/           |
+       |                         | |              |
+       |                         |_|              |
        |                                          |
      __)__________________________________________|
 ()==(                                            (@==()
@@ -277,6 +277,8 @@
   "I don't do a whole lot ... yet."
   [& args]
   (println)
+  (println 
+
   (println-typing " 
  ___      ___           __                                    __          
 /   \\    /   \\  ____   |  |   ____   ____   _____   ____    _/  |_   ___  
@@ -304,17 +306,7 @@
                   ;to move in [north/south/east/west]" 20) 
           command (read-line)]
           
-      (recur local-maze (respond pl (to-keywords command))))))
-
-
-  ; (print-maze arr 3 3)
-  ; (print-many-lines 30)
-  ; (println-typing "THE APOCALYPSE - LIFE AFTER CS 225" 50)
-  ; (print-typing "Welcome to UIUC in the year of 2020" 50)
-  ; (println-typing "..." 300)
-  ; (println-typing "after the aftermath of CS 225" 100)
-
-
+      (recur local-maze (respond pl (to-keywords command)))))))
 
 
 
