@@ -150,8 +150,13 @@
   {:location :first_room
    :has-key false
    :has-map false
-   :n 0})
+   :n 0
+   :health 100})
 
+(def monster 
+  { :location :second_room
+    :n (rand-int 9) 
+    })
 
 (defn to-keywords [commands]
   (mapv keyword (str/split commands #"[.,?! ]+")))
@@ -183,7 +188,7 @@
     (println "=============================")
     (println (-> the-maze loc :title))
     (println "=============================")
-    (cond (and (or east e) (or south s) (or west w) (or north n)) (println-typing "You are in an open area." 40)
+     (cond (and (or east e) (or south s) (or west w) (or north n)) (println-typing "You are in an open area." 40)
       (and (or s south) (or w west) (or n north)) (println-typing "You are at an edge. There is a wall east of you." 40)
       (and (or e east) (or west w) (or n north)) (println-typing "You are at an edge. There is a wall south of you." 40)
       (and (or e east) (or s south) (or n north)) (println-typing "You are at an edge. There is a wall west of you." 40)
