@@ -268,10 +268,6 @@
   "I don't do a whole lot ... yet."
   [& args]
   (println)
-<<<<<<< HEAD
-  (println 
-=======
->>>>>>> movement
 
   (println-typing " 
 
@@ -291,7 +287,24 @@
 |          =  = = ===   = = =   `=' `== = = `==  =   =    =-' `==         |
 |_________________________________________________________________________|" 
 15)
-
+  (println)
+  
+(println-typing "                        
+ _____________________________________________________________________________
+| The Apocalypse is a game of adventure, danger and monsters.                 |
+| In this world you will explore some of the most amazing puzzles             |
+| and mazes ever seen by mortal man.                                          |
+|                                                                             |
+| In Apocalypse the intrepid explorer finds himself in a lost labyrinth       |
+| of another world, searching for a door that will take him back              |
+| to his own world, his loved ones. But to find this door,                    |
+| the adventurer has to go through different mazes filled with                |
+| unknown creatures and traps!                                                |
+|                                                                             |
+| This game has been created by Shashank Bansal and Boom Dej-Udom.            |
+| Have fun! and let us know if you have any feedback at sbansal6@illinois.edu.|
+|                                                                             |
+|_____________________________________________________________________________|" 15)
   (loop [local-maze the-maze
          local-player adventurer]
         (let [pl (status local-player)
@@ -301,12 +314,8 @@
                   ;to move in [north/south/east/west]" 20) 
           command (read-line)]
           
-<<<<<<< HEAD
-      (recur local-maze (respond pl (to-keywords command)))))))
-=======
       (recur local-maze (respond pl (to-keywords command))))))
 
->>>>>>> movement
 
 
 
