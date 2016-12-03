@@ -47,14 +47,18 @@
         }
   :second_room {:desc "best building"
               :title "second_room"
-              :rightWall [0,0,0,
-                          0,1,0,
-                          0,0,0]
-              :downWall [0,1,0,
-                         0,0,0
-                         0,0,0]
-              :width 3
-              :height 3
+              :rightWall [0,0,0,0,0
+                          1,0,0,1,0
+                          1,0,0,1,0
+                          1,0,0,0,0
+                          0,0,0,0,0]
+              :downWall [0,1,1,1,0
+                         0,0,0,0,0
+                         0,0,0,0,0
+                         1,0,0,0,1
+                         0,0,0,0,0]
+              :width 5
+              :height 5
           :exit 1
           :key 3
           :map 5
@@ -147,16 +151,11 @@
 )
  
 (def adventurer
-  {:location :first_room
-   :has-key true
-   :has-map true
+  {:location :second_room
+   :has-key false
+   :has-map false
    :n 0
    :health 100})
-
-(def monster 
-  { :location :second_room
-    :n (rand-int 9) 
-    })
 
 (defn to-keywords [commands]
   (mapv keyword (str/split commands #"[.,?! ]+")))
@@ -183,7 +182,7 @@
         (and (or e east) (or s south)) (println-typing "You are at a corner. There are walls surrounding north and west." 40)
         (and (or e east) (or n north)) (println-typing "You are at a corner. There are walls surrounding south and west." 40)
         (and (or w west) (or s south)) (println-typing "You are at a corner. There are walls surrounding north and east." 40)
-        (and (or w west) (or n north)) (println-typing "You are at a ceorner. There are walls surrounding south and east." 40)
+        (and (or w west) (or n north)) (println-typing "You are at a corner. There are walls surrounding south and east." 40)
         (and (or s south) (or n north)) (println-typing "You are in an alley. Either head north or south" 40)
         (and (or w west) (or e east)) (println-typing "You are in an alley. Either head east or west." 40)
         (and (or e east)) (println-typing "You cannot move forward. You are at a dead end." 40)
@@ -266,6 +265,23 @@
 
     ))))
 
+(defn instructions [player]
+  (println "
+ ______________________________________
+|                                      |
+|         INSTRUCTIONS                 |
+|                                      |
+| DIRECTIONS                           |
+| To move NORTH - Enter north or n     |
+| To move SOUTH - Enter south or s     |
+| To move EAST  - Enter east or e      |
+| To move WEST  - Enter west or w      |
+|                                      |
+| MAP USAGE                            |
+| To use the map - Enter use map       |
+|______________________________________|")
+  player)
+
 
 (defn respond [player command]
   (match command
@@ -278,15 +294,13 @@
          [:s] (go 1 player)
          [:n] (go 3 player)
          [:w] (go 2 player)
+         [:i] (instructions player)
          [:use :map] (do (if (player :has-map) (print-maze player) (println "You don't have a map yet.")) player)
 
          _ (do (println "I don't understand you. If you are stuck, you can use a hint. BEWARE! Using a hint will take you to a random place in the maze. So use this wisely!")
                player)
 
          ))
-
-;We should do a hints page which opens up when the player is stuck for too long. We can do something like he goes back to a random
-;position if he uses a hint.  
 
 (defn -main
   "I don't do a whole lot ... yet."
@@ -335,13 +349,7 @@
          local-player adventurer]
         (let [pl (status local-player)
              ; _ (print-maze pl)
-              _ (println-typing "What do you want to do now?" 20)
-                ;(println-typing "To move around please enter the direction you
-                  ;to move in [north/south/east/west]" 20) 
-          command (read-line)]
-          
+              _ (println-typing "What do you want to do now?" 20) 
+          command (read-line)] 
       (recur local-maze (respond pl (to-keywords command))))))
-
-
-
 
