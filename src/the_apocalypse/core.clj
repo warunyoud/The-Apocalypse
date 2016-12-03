@@ -334,13 +334,8 @@
          [:s] (go 1 player)
          [:n] (go 3 player)
          [:w] (go 2 player)
-<<<<<<< HEAD
          [:i] (instructions player)
-         [:use :map] (do (if (player :has-map) (print-maze player) (println "You don't have a map yet.")) player)
-=======
          [:use :map] (do (if (player :has-map) (print-maze maze player) (println "You don't have a map yet.")) player)
->>>>>>> monster
-
          _ (do (println "I don't understand you. If you are stuck, you can use a hint. BEWARE! Using a hint will take you to a random place in the maze. So use this wisely!")
                player)
 
@@ -394,16 +389,11 @@
         (let [pl (status local-player)
               mz (move-monsters local-maze pl)
              ; _ (print-maze pl)
-<<<<<<< HEAD
-              _ (println-typing "What do you want to do now?" 20) 
-          command (read-line)] 
-      (recur local-maze (respond pl (to-keywords command))))))
-=======
+
               _ (println-typing "What do you want to do now?" 20)
                 ;(println-typing "To move around please enter the direction you
                   ;to move in [north/south/east/west]" 20) 
           command (read-line)]
           
       (recur mz (respond mz pl (to-keywords command))))))
->>>>>>> monster
 
