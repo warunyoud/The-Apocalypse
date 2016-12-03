@@ -77,3 +77,5 @@ exit
 (println "\\ABC")
 (println "\\")
 exit
+(every? true [true, true])
+exit
