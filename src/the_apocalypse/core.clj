@@ -148,8 +148,8 @@
  
 (def adventurer
   {:location :first_room
-   :has-key false
-   :has-map false
+   :has-key true
+   :has-map true
    :n 0
    :health 100})
 
@@ -161,50 +161,54 @@
 (defn to-keywords [commands]
   (mapv keyword (str/split commands #"[.,?! ]+")))
 
+(defn display [player]
+  (let [loc (player :location)
+        east (can_travel player 0)
+        south (can_travel player 1)
+        west (can_travel player 2)
+        north (can_travel player 3)
+        e (can_travel player 0)
+        s (can_travel player 1)
+        w (can_travel player 2)
+        n (can_travel player 3)]
+    (println)
+      (println "=============================")
+      (println (-> the-maze loc :title))
+      (println "=============================")
+       (cond (and (or east e) (or south s) (or west w) (or north n)) (println-typing "You are in an open area." 40)
+        (and (or s south) (or w west) (or n north)) (println-typing "You are at an edge. There is a wall east of you." 40)
+        (and (or e east) (or west w) (or n north)) (println-typing "You are at an edge. There is a wall south of you." 40)
+        (and (or e east) (or s south) (or n north)) (println-typing "You are at an edge. There is a wall west of you." 40)
+        (and (or e east) (or s south) (or w west)) (println-typing "You are at an edge. There is a wall north of you." 40)
+        (and (or e east) (or s south)) (println-typing "You are at a corner. There are walls surrounding north and west." 40)
+        (and (or e east) (or n north)) (println-typing "You are at a corner. There are walls surrounding south and west." 40)
+        (and (or w west) (or s south)) (println-typing "You are at a corner. There are walls surrounding north and east." 40)
+        (and (or w west) (or n north)) (println-typing "You are at a ceorner. There are walls surrounding south and east." 40)
+        (and (or s south) (or n north)) (println-typing "You are in an alley. Either head north or south" 40)
+        (and (or w west) (or e east)) (println-typing "You are in an alley. Either head east or west." 40)
+        (and (or e east)) (println-typing "You cannot move forward. You are at a dead end." 40)
+        (and (or s south)) (println-typing "You cannot move forward. You are at a dead end." 40)
+        (and (or w west)) (println-typing "You cannot move forward. You are at a dead end." 40)
+        (and (or n north)) (println-typing "You cannot move forward. You are at a dead end." 40)
+        )) player)
 
 (defn move-to [player]
   (let [loc (player :location)
     nextmap (-> the-maze loc :nextmap)
     nextn (-> the-maze loc :nextn)]
 
-
-  (assoc-in (assoc-in (assoc-in (assoc-in player [:has-map] false) [:has-key] false) [:location] nextmap) [:n] nextn))
+    (display (assoc-in (assoc-in (assoc-in (assoc-in player [:has-map] false) [:has-key] false) [:location] nextmap) [:n] nextn)))
   )
+
 
 (defn status [player]
   (let [loc (player :location)
       keyloc (-> the-maze loc :key)
       maploc (-> the-maze loc :map)
       exitloc (-> the-maze loc :exit)
-      east (can_travel player 0)
-      south (can_travel player 1)
-      west (can_travel player 2)
-      north (can_travel player 3)
-      e (can_travel player 0)
-      s (can_travel player 1)
-      w (can_travel player 2)
-      n (can_travel player 3)]
-    (println)
-    (println "=============================")
-    (println (-> the-maze loc :title))
-    (println "=============================")
-     (cond (and (or east e) (or south s) (or west w) (or north n)) (println-typing "You are in an open area." 40)
-      (and (or s south) (or w west) (or n north)) (println-typing "You are at an edge. There is a wall east of you." 40)
-      (and (or e east) (or west w) (or n north)) (println-typing "You are at an edge. There is a wall south of you." 40)
-      (and (or e east) (or s south) (or n north)) (println-typing "You are at an edge. There is a wall west of you." 40)
-      (and (or e east) (or s south) (or w west)) (println-typing "You are at an edge. There is a wall north of you." 40)
-      (and (or e east) (or s south)) (println-typing "You are at a corner. There are walls surrounding north and west." 40)
-      (and (or e east) (or n north)) (println-typing "You are at a corner. There are walls surrounding south and west." 40)
-      (and (or w west) (or s south)) (println-typing "You are at a corner. There are walls surrounding north and east." 40)
-      (and (or w west) (or n north)) (println-typing "You are at a ceorner. There are walls surrounding south and east." 40)
-      (and (or s south) (or n north)) (println-typing "You are in an alley. Either head north or south" 40)
-      (and (or w west) (or e east)) (println-typing "You are in an alley. Either head east or west." 40)
-      (and (or e east)) (println-typing "You cannot move forward. You are at a dead end." 40)
-      (and (or s south)) (println-typing "You cannot move forward. You are at a dead end." 40)
-      (and (or w west)) (println-typing "You cannot move forward. You are at a dead end." 40)
-      (and (or n north)) (println-typing "You cannot move forward. You are at a dead end." 40)
-      )
+      ]
 
+      (display player)
     (cond (and (= keyloc (player :n)) (not (player :has-key))) (do (println-typing "There is a key on the floor." 40) (println 
 "\n  ad8888888888ba
  dP'         `\"8b,
@@ -289,43 +293,43 @@
   [& args]
   (println)
 
-  (println-typing " 
+;   (println-typing " 
 
- ___      ___           __                                    __          
-/   \\    /   \\  ____   |  |   ____   ____   _____   ____    _/  |_   ___  
-\\    \\/\\/   /  / __ \\  |  |  / ___\\ /  _ \\ /     \\_/  __\\  |      \\ /  _ \\ 
- \\         /  \\  ___/  |  |_ \\ \\__  ( <_> )  Y Y  \\  ___/    |  |  (  <_> )
-  \\__/\\   /    \\___ >  |____/ \\___ > ____/ |__| _| /\\___ >   |__|   \\____/ 
-       \\_/        \\/             \\/              \\/   \\/                " 10)
+;  ___      ___           __                                    __          
+; /   \\    /   \\  ____   |  |   ____   ____   _____   ____    _/  |_   ___  
+; \\    \\/\\/   /  / __ \\  |  |  / ___\\ /  _ \\ /     \\_/  __\\  |      \\ /  _ \\ 
+;  \\         /  \\  ___/  |  |_ \\ \\__  ( <_> )  Y Y  \\  ___/    |  |  (  <_> )
+;   \\__/\\   /    \\___ >  |____/ \\___ > ____/ |__| _| /\\___ >   |__|   \\____/ 
+;        \\_/        \\/             \\/              \\/   \\/                " 10)
 
 
-  (println-typing "                              
- _________________________________________________________________________
-|                                                                         |
-|         === = = ===   .-. .-. .=. .== .-. .  '. .' .--. .-= .==         |
-|          |  |=| |=    |=| |=' | | |   |=| |    |   |--' `-. |=          |
-|          =  = = ===   = = =   `=' `== = = `==  =   =    =-' `==         |
-|_________________________________________________________________________|" 
-10)
-  (println)
+;   (println-typing "                              
+;  _________________________________________________________________________
+; |                                                                         |
+; |         === = = ===   .-. .-. .=. .== .-. .  '. .' .--. .-= .==         |
+; |          |  |=| |=    |=| |=' | | |   |=| |    |   |--' `-. |=          |
+; |          =  = = ===   = = =   `=' `== = = `==  =   =    =-' `==         |
+; |_________________________________________________________________________|" 
+; 10)
+;   (println)
 
-(println-typing "                        
- _____________________________________________________________________________
-|                                                                             |
-| The Apocalypse is a game of adventure, danger and monsters.                 |
-| In this world you will explore some of the most amazing puzzles             |
-| and mazes ever seen by mortal man.                                          |
-|                                                                             |
-| In Apocalypse the intrepid explorer finds himself in a lost labyrinth       |
-| of another world, searching for a door that will take him back              |
-| to his own world, his loved ones. But to find this door,                    |
-| the adventurer has to go through different mazes filled with                |
-| unknown creatures and traps!                                                |
-|                                                                             |
-| This game has been created by Shashank Bansal and Boom Dej-Udom.            |
-| Have fun! and let us know if you have any feedback at sbansal6@illinois.edu.|
-|                                                                             |
-|_____________________________________________________________________________|" 10)
+; (println-typing "                        
+;  _____________________________________________________________________________
+; |                                                                             |
+; | The Apocalypse is a game of adventure, danger and monsters.                 |
+; | In this world you will explore some of the most amazing puzzles             |
+; | and mazes ever seen by mortal man.                                          |
+; |                                                                             |
+; | In Apocalypse the intrepid explorer finds himself in a lost labyrinth       |
+; | of another world, searching for a door that will take him back              |
+; | to his own world, his loved ones. But to find this door,                    |
+; | the adventurer has to go through different mazes filled with                |
+; | unknown creatures and traps!                                                |
+; |                                                                             |
+; | This game has been created by Shashank Bansal and Boom Dej-Udom.            |
+; | Have fun! and let us know if you have any feedback at sbansal6@illinois.edu.|
+; |                                                                             |
+; |_____________________________________________________________________________|" 10)
   
   (loop [local-maze the-maze
          local-player adventurer]
