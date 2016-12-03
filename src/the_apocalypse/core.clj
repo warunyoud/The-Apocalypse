@@ -44,22 +44,19 @@
           :map 11
           :nextmap :second_room
           :nextn 3
-          :monstn 1
-          :monsters [{:index 0
-                    :size 2
-                    :path [8, 9]
-                    :alive true}]
+          :monstn 0
+          :monsters []
         }
   :second_room {:desc "best building"
               :title "second_room"
               :rightWall [0,0,0,0,0
                           1,0,0,1,0
-                          1,0,0,1,0
+                          1,1,0,1,0
                           1,0,0,0,0
                           0,0,0,0,0]
               :downWall [0,1,1,1,0
-                         0,0,0,0,0
-                         0,0,0,0,0
+                         0,0,1,0,0
+                         0,0,1,0,0
                          1,0,0,0,1
                          0,0,0,0,0]
               :width 5
@@ -69,6 +66,11 @@
           :map 5
           :nextmap :second_room
           :nextn 3
+          :monstn 1
+          :monsters [{:index 0
+                    :size 8
+                    :path [17,16,11,6,7,8,13,18]
+                    :alive true}]
         }
     :third_room {:desc "best building"
               :title "third_room"
@@ -113,7 +115,7 @@
       (loop [myIndex 0] 
           (if (= myIndex (-> maze loc :monstn))
             false
-            (if (and (>= monstn 1) (= (nth ((nth monster 0) :path) ((nth monster 0) :index)) (+ j i)))
+            (if (= (nth ((nth monster myIndex) :path) ((nth monster myIndex) :index)) (+ j i))
               true
               (recur (+ 1 myIndex)))
                     
@@ -173,17 +175,28 @@
 (def adventurer
   {:location :second_room
    :has-key false
-   :has-map false
-   :n 0
-   :health 100})
-
-<<<<<<< HEAD
-=======
-
->>>>>>> monster
+   :has-map true
+   :n 0})
+(def adveturer2 
+  {:location :second_player})
 (defn to-keywords [commands]
   (mapv keyword (str/split commands #"[.,?! ]+")))
 
+
+(defn check-hit [maze player]
+  (let [loc (player :location)
+      monster (-> maze loc :monsters)
+      monstn (-> maze loc :monstn)
+      ] (if (loop [myIndex 0] 
+            (if (= myIndex (-> maze loc :monstn))
+              false
+              (if (= (nth ((nth monster myIndex) :path) ((nth monster myIndex) :index)) (player :n))
+                true
+                (recur (+ 1 myIndex)))
+                      
+            )
+          )(do (print "You are dead") player) player))
+  )
 
 (defn move-monsters [maze player]
   (let [loc (player :location)]
@@ -240,15 +253,29 @@
   )
 
 
-(defn status [player]
+(defn status [maze player]
   (let [loc (player :location)
-      keyloc (-> the-maze loc :key)
-      maploc (-> the-maze loc :map)
-      exitloc (-> the-maze loc :exit)
+      keyloc (-> maze loc :key)
+      maploc (-> maze loc :map)
+      exitloc (-> maze loc :exit)
+      monster (-> maze loc :monsters)
+      monstn (-> maze loc :monstn)
       ]
 
       (display player)
-    (cond (and (= keyloc (player :n)) (not (player :has-key))) (do (println-typing "There is a key on the floor." 40) (println 
+      (print)
+
+    (cond 
+      (loop [myIndex 0] 
+          (if (= myIndex (-> maze loc :monstn))
+            false
+            (if (= (nth ((nth monster myIndex) :path) ((nth monster myIndex) :index)) (player :n))
+              true
+              (recur (+ 1 myIndex)))
+                    
+          )
+        )(do (print "You are dead") player)
+      (and (= keyloc (player :n)) (not (player :has-key))) (do (println-typing "There is a key on the floor." 40) (println 
 "\n  ad8888888888ba
  dP'         `\"8b,
  8  ,aaa,       \"Y888a     ,aaaa,     ,aaa,  ,aa,
@@ -346,48 +373,49 @@
   [& args]
   (println)
 
-  (println-typing " 
+;   (println-typing " 
 
- ___      ___           __                                    __          
-/   \\    /   \\  ____   |  |   ____   ____   _____   ____    _/  |_   ___  
-\\    \\/\\/   /  / __ \\  |  |  / ___\\ /  _ \\ /     \\_/  __\\  |      \\ /  _ \\ 
- \\         /  \\  ___/  |  |_ \\ \\__  ( <_> )  Y Y  \\  ___/    |  |  (  <_> )
-  \\__/\\   /    \\___ >  |____/ \\___ > ____/ |__| _| /\\___ >   |__|   \\____/ 
-       \\_/        \\/             \\/              \\/   \\/                " 10)
+;  ___      ___           __                                    __          
+; /   \\    /   \\  ____   |  |   ____   ____   _____   ____    _/  |_   ___  
+; \\    \\/\\/   /  / __ \\  |  |  / ___\\ /  _ \\ /     \\_/  __\\  |      \\ /  _ \\ 
+;  \\         /  \\  ___/  |  |_ \\ \\__  ( <_> )  Y Y  \\  ___/    |  |  (  <_> )
+;   \\__/\\   /    \\___ >  |____/ \\___ > ____/ |__| _| /\\___ >   |__|   \\____/ 
+;        \\_/        \\/             \\/              \\/   \\/                " 10)
 
 
-  (println-typing "                              
- _________________________________________________________________________
-|                                                                         |
-|         === = = ===   .-. .-. .=. .== .-. .  '. .' .--. .-= .==         |
-|          |  |=| |=    |=| |=' | | |   |=| |    |   |--' `-. |=          |
-|          =  = = ===   = = =   `=' `== = = `==  =   =    =-' `==         |
-|_________________________________________________________________________|" 
-10)
-  (println)
+;   (println-typing "                              
+;  _________________________________________________________________________
+; |                                                                         |
+; |         === = = ===   .-. .-. .=. .== .-. .  '. .' .--. .-= .==         |
+; |          |  |=| |=    |=| |=' | | |   |=| |    |   |--' `-. |=          |
+; |          =  = = ===   = = =   `=' `== = = `==  =   =    =-' `==         |
+; |_________________________________________________________________________|" 
+; 10)
+;   (println)
 
-(println-typing "                        
- _____________________________________________________________________________
-|                                                                             |
-| The Apocalypse is a game of adventure, danger and monsters.                 |
-| In this world you will explore some of the most amazing puzzles             |
-| and mazes ever seen by mortal man.                                          |
-|                                                                             |
-| In Apocalypse the intrepid explorer finds himself in a lost labyrinth       |
-| of another world, searching for a door that will take him back              |
-| to his own world, his loved ones. But to find this door,                    |
-| the adventurer has to go through different mazes filled with                |
-| unknown creatures and traps!                                                |
-|                                                                             |
-| This game has been created by Shashank Bansal and Boom Dej-Udom.            |
-| Have fun! and let us know if you have any feedback at sbansal6@illinois.edu.|
-|                                                                             |
-|_____________________________________________________________________________|" 10)
+; (println-typing "                        
+;  _____________________________________________________________________________
+; |                                                                             |
+; | The Apocalypse is a game of adventure, danger and monsters.                 |
+; | In this world you will explore some of the most amazing puzzles             |
+; | and mazes ever seen by mortal man.                                          |
+; |                                                                             |
+; | In Apocalypse the intrepid explorer finds himself in a lost labyrinth       |
+; | of another world, searching for a door that will take him back              |
+; | to his own world, his loved ones. But to find this door,                    |
+; | the adventurer has to go through different mazes filled with                |
+; | unknown creatures and traps!                                                |
+; |                                                                             |
+; | This game has been created by Shashank Bansal and Boom Dej-Udom.            |
+; | Have fun! and let us know if you have any feedback at sbansal6@illinois.edu.|
+; |                                                                             |
+; |_____________________________________________________________________________|" 10)
   
   (loop [local-maze the-maze
          local-player adventurer]
-        (let [pl (status local-player)
+        (let [pl (check-hit local-maze local-player)
               mz (move-monsters local-maze pl)
+              pll (status mz pl)
              ; _ (print-maze pl)
 
               _ (println-typing "What do you want to do now?" 20)
@@ -395,5 +423,5 @@
                   ;to move in [north/south/east/west]" 20) 
           command (read-line)]
           
-      (recur mz (respond mz pl (to-keywords command))))))
+      (recur mz (respond mz pll (to-keywords command))))))
 
