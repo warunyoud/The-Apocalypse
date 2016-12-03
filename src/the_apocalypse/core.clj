@@ -44,6 +44,11 @@
           :map 11
           :nextmap :second_room
           :nextn 3
+          :monstn 1
+          :monsters [{:index 0
+                    :size 2
+                    :path [8, 9]
+                    :alive true}]
         }
   :second_room {:desc "best building"
               :title "second_room"
@@ -86,12 +91,14 @@
 
 ;Prints out the maze if the player finds the map in the maze
 
-(defn print-maze [player]
+(defn print-maze [maze player]
   (let [loc (player :location)
-        rightWall (-> the-maze loc :rightWall)
-        downWall (-> the-maze loc :downWall)
-        width (-> the-maze loc :width)
-        height (-> the-maze loc :height)]
+        rightWall (-> maze loc :rightWall)
+        downWall (-> maze loc :downWall)
+        width (-> maze loc :width)
+        height (-> maze loc :height)
+        monster (-> maze loc :monsters)
+        monstn (-> maze loc :monstn)]
 
   (doseq [i (range 0 width)] (print " ___"))
 
@@ -101,7 +108,20 @@
     ;top
     (if (= (mod i width) 0) (do (if (= i 0) (println) (println "|")) (print "|")
 
-    (doseq [j (range 0 width)] (cond (= (player :n) (+ j i)) (print "X  ") (and (= (-> the-maze loc :key) (+ j i)) (not (player :has-key))) (print "key") 
+    (doseq [j (range 0 width)] (cond (= (player :n) (+ j i)) (print "X  ") 
+      ;monster
+      (loop [myIndex 0] 
+          (if (= myIndex (-> maze loc :monstn))
+            false
+            (if (and (>= monstn 1) (= (nth ((nth monster 0) :path) ((nth monster 0) :index)) (+ j i)))
+              true
+              (recur (+ 1 myIndex)))
+                    
+          )
+        )(print "*U*")
+
+      ;key
+      (and (= (-> the-maze loc :key) (+ j i)) (not (player :has-key))) (print "key") 
       (= (-> the-maze loc :exit) (+ j i)) (print "ext")
       (and (= (-> the-maze loc :map) (+ j i)) (not (player :has-map))) (print "map") :else (print "   "))
     (if (= (nth rightWall (+ j i)) 1) (print "|") (if (not= j (- width 1)) (print " "))))
@@ -157,8 +177,28 @@
    :n 0
    :health 100})
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> monster
 (defn to-keywords [commands]
   (mapv keyword (str/split commands #"[.,?! ]+")))
+
+
+(defn move-monsters [maze player]
+  (let [loc (player :location)]
+
+        (loop [myIndex 0
+              mz maze] 
+          (if (= myIndex (-> mz loc :monstn))
+            mz
+            (recur (inc myIndex) (if (= ((nth (-> mz loc :monsters) 0) :index) (- ((nth (-> mz loc :monsters) 0) :size) 1)) 
+              (assoc-in mz [loc :monsters 0 :index] 0) (update-in mz [loc :monsters 0 :index] inc)))
+                    
+          )
+        )
+
+        ))
 
 (defn display [player]
   (let [loc (player :location)
@@ -283,7 +323,7 @@
   player)
 
 
-(defn respond [player command]
+(defn respond [maze player command]
   (match command
          ; [:look] (update-in player [:seen] #(disj % (-> player :location)))
          [:east] (go 0 player)
@@ -294,8 +334,12 @@
          [:s] (go 1 player)
          [:n] (go 3 player)
          [:w] (go 2 player)
+<<<<<<< HEAD
          [:i] (instructions player)
          [:use :map] (do (if (player :has-map) (print-maze player) (println "You don't have a map yet.")) player)
+=======
+         [:use :map] (do (if (player :has-map) (print-maze maze player) (println "You don't have a map yet.")) player)
+>>>>>>> monster
 
          _ (do (println "I don't understand you. If you are stuck, you can use a hint. BEWARE! Using a hint will take you to a random place in the maze. So use this wisely!")
                player)
@@ -348,8 +392,18 @@
   (loop [local-maze the-maze
          local-player adventurer]
         (let [pl (status local-player)
+              mz (move-monsters local-maze pl)
              ; _ (print-maze pl)
+<<<<<<< HEAD
               _ (println-typing "What do you want to do now?" 20) 
           command (read-line)] 
       (recur local-maze (respond pl (to-keywords command))))))
+=======
+              _ (println-typing "What do you want to do now?" 20)
+                ;(println-typing "To move around please enter the direction you
+                  ;to move in [north/south/east/west]" 20) 
+          command (read-line)]
+          
+      (recur mz (respond mz pl (to-keywords command))))))
+>>>>>>> monster
 
