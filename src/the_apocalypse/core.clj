@@ -3,7 +3,7 @@
     [clojure.string :as str])
   (:gen-class))
 
-;special thanks Normand Veilleux (key pic)
+;prints out the text by typing it
 
 (defn print-typing [text waittime]
 	(doseq [i (range (count text))]
@@ -12,6 +12,7 @@
 	(Thread/sleep waittime))
 	)
 
+;prints out the text and goes to the next line
 
 (defn println-typing [text waittime]
   (doseq [i (range (count text))]
@@ -21,16 +22,61 @@
   (println "")
   )
 
-(defn print-many-lines [n]
-  (doseq [i (range n)]
-    (println)
-    ))
+;INSTRUCTIONS TO PLAY
+
+(defn instructions [player]
+  (println "
+ ______________________________________
+|                                      |
+|         INSTRUCTIONS                 |
+|                                      |
+| DIRECTIONS                           |
+| To move NORTH - Enter north or n     |
+| To move SOUTH - Enter south or s     |
+| To move EAST  - Enter east or e      |
+| To move WEST  - Enter west or w      |
+|                                      |
+| MAP USAGE                            |
+| To use the map - Enter use map       |
+|______________________________________|")
+  player)
 
 
+(defn the_end [player]
+  (println-typing 
+    "
+ /$$$$$$$$ /$$   /$$ /$$$$$$$$       /$$$$$$$$ /$$   /$$ /$$$$$$$ 
+|__  $$__/| $$  | $$| $$_____/      | $$_____/| $$$ | $$| $$__  $$
+   | $$   | $$  | $$| $$            | $$      | $$$$| $$| $$  \\ $$
+   | $$   | $$$$$$$$| $$$$$         | $$$$$   | $$ $$ $$| $$  | $$
+   | $$   | $$__  $$| $$__/         | $$__/   | $$  $$$$| $$  | $$
+   | $$   | $$  | $$| $$            | $$      | $$\\  $$$| $$  | $$
+   | $$   | $$  | $$| $$$$$$$$      | $$$$$$$$| $$ \\  $$| $$$$$$$/
+   |__/   |__/  |__/|________/      |________/|__/  \\__/|_______/ 
+                                                                                                          
+" 10)
+(println-typing "Thank you for playing!" 20)
+  player)
+
+;player definition
+
+(def adventurer
+  {:location :second_room
+   :has-key false
+   :has-map true
+   :n 0})
+(def adveturer2 
+  {:location :second_player})
+
+(defn to-keywords [commands]
+  (mapv keyword (str/split commands #"[.,?! ]+")))
+
+
+; definition of the 3 mazes
 
 (def the-maze
-  {:first_room {:desc "best building"
-              :title "Floor: B-5"
+  {:first_room {:desc "first room in an unknown building"
+              :title "first_room"
               :rightWall [0,0,1,0
                           1,1,0,0
                           0,1,0,0]
@@ -47,7 +93,8 @@
           :monstn 0
           :monsters []
         }
-  :second_room {:desc "best building"
+
+  :second_room {:desc "second room in an unknown building. There is a monster here"
               :title "second_room"
               :rightWall [0,0,0,0,0
                           1,0,0,1,0
@@ -65,30 +112,41 @@
           :key 3
           :map 5
           :nextmap :second_room
-          :nextn 3
+          :nextn 3 
           :monstn 1
           :monsters [{:index 0
                     :size 8
                     :path [17,16,11,6,7,8,13,18]
                     :alive true}]
         }
-    :third_room {:desc "best building"
+    
+    :third_room {:desc "Third room in an unknown building. There are 2 monsters in this maze"
               :title "third_room"
-              :rightWall [0,0,0,
-                          0,1,0,
-                          0,0,0]
-              :downWall [0,1,0,
-                         0,0,0
-                         0,0,0]
-              :width 3
-              :height 3
-          :connection [{:x1 1 :y1 2 :maze :first_room :x2 0 :y2 0
-            },{:x1 1 :y 2 :maze :second_room :x2 0 :y2 2
-            }
-          ]
+              :rightWall [0,0,0,0
+                          0,0,1,0
+                          0,1,0,0
+                          0,0,0,0
+                          0,0,0,0]
+              :downWall [1,1,1,0
+                         0,0,1,0
+                         0,0,1,0
+                         1,1,1,0
+                         0,0,0,0]
+              :width 4
+              :height 5
+          :exit 0
+          :key 6
+          :map 16
+          :nextn 3
+          :monstn 1
+          :monsters [{:index 0
+                    :size 6
+                    :path [16, 17, 18, 19, 15, 11]
+                    :alive true}]
         }
-    }
-  )
+
+  }
+)
 
 
 ;Prints out the maze if the player finds the map in the maze
@@ -171,17 +229,6 @@
   ; for up boundaries - check n < width
   ; for down boudaries - check at ?
 )
- 
-(def adventurer
-  {:location :second_room
-   :has-key false
-   :has-map true
-   :n 0})
-(def adveturer2 
-  {:location :second_player})
-(defn to-keywords [commands]
-  (mapv keyword (str/split commands #"[.,?! ]+")))
-
 
 (defn check-hit [maze player]
   (let [loc (player :location)
@@ -332,24 +379,6 @@
 
     ))))
 
-(defn instructions [player]
-  (println "
- ______________________________________
-|                                      |
-|         INSTRUCTIONS                 |
-|                                      |
-| DIRECTIONS                           |
-| To move NORTH - Enter north or n     |
-| To move SOUTH - Enter south or s     |
-| To move EAST  - Enter east or e      |
-| To move WEST  - Enter west or w      |
-|                                      |
-| MAP USAGE                            |
-| To use the map - Enter use map       |
-|______________________________________|")
-  player)
-
-
 (defn respond [maze player command]
   (match command
          ; [:look] (update-in player [:seen] #(disj % (-> player :location)))
@@ -363,7 +392,7 @@
          [:w] (go 2 player)
          [:i] (instructions player)
          [:use :map] (do (if (player :has-map) (print-maze maze player) (println "You don't have a map yet.")) player)
-         _ (do (println "I don't understand you. If you are stuck, you can use a hint. BEWARE! Using a hint will take you to a random place in the maze. So use this wisely!")
+         _ (do (println "I don't understand you.")
                player)
 
          ))
@@ -372,6 +401,11 @@
   "I don't do a whole lot ... yet."
   [& args]
   (println)
+;   (let[local-maze the-maze
+;         local-player adventurer
+;         pl(local-maze local-player)]
+;         (print-maze local-maze pl))
+; )
 
 ;   (println-typing " 
 
@@ -416,12 +450,8 @@
         (let [pl (check-hit local-maze local-player)
               mz (move-monsters local-maze pl)
               pll (status mz pl)
-             ; _ (print-maze pl)
 
               _ (println-typing "What do you want to do now?" 20)
-                ;(println-typing "To move around please enter the direction you
-                  ;to move in [north/south/east/west]" 20) 
           command (read-line)]
-          
       (recur mz (respond mz pll (to-keywords command))))))
 
