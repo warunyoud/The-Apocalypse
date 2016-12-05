@@ -68,7 +68,7 @@
 (defn to-keywords [commands]
   (mapv keyword (str/split commands #"[.,?! ]+")))
 
-
+;(println "Yo whatsup")
 ; definition of the 3 mazes
 (def the-maze
   {:first_room {:desc "first room in an unknown building"
@@ -137,14 +137,97 @@
           :n 2
           :monstn 1
           :monsters [{:index 0
-                    :size 6
-                    :path [16, 17, 18, 19, 15, 11]
+                    :size 2
+                    :path [3 4];[16,17,18,19,15,11,15,19,18,17]
                     :alive true}]
         }
   }
 )
 
+;(println "compiled till the maze, next is can_travel")
 
+;this makes sure if the player can move in the direction specified
+(defn can_travel [player dir]
+  (let [loc (player :location)
+        curr_loc (player :n)
+        rightWall (-> the-maze loc :rightWall)
+        downWall (-> the-maze loc :downWall)
+        width (-> the-maze loc :width)
+        height (-> the-maze loc :height)] 
+    (cond (= dir 2) (not (or (= (mod curr_loc width) 0) (= (nth rightWall (- curr_loc 1)) 1)))
+
+    (= dir 0) (not (or (= (mod (+ curr_loc 1) width) 0) (= (nth rightWall curr_loc) 1)))
+
+    (= dir 3) (not (or (< curr_loc width) (= (nth downWall (- curr_loc width)) 1)))
+
+    (= dir 1) (not (or (>= (+ curr_loc width) (* width height)) (= (nth downWall curr_loc) 1)))
+
+    ))
+  ; 0 ->right
+  ; 1 ->down
+  ; 2 ->left
+  ; 3 ->up
+  ; for downWall -check at n
+  ; for upWall - check at n-width
+  ; for leftwall - check at n-1 rightwall
+  ; for rightwall - check at n rightwall
+  ; for left boundaries - check at (n)%width 
+  ; for right boundaries - check at (n+1)%width
+  ; for up boundaries - check n < width
+  ; for down boudaries - check at ?
+)
+
+;moves the player if he can_travel in the direction
+
+(defn go [dir player]
+  (let [loc (player :location)
+        width (-> the-maze loc :width)] 
+  (if (not (can_travel player dir)) (do (println "Can't go there. There is a wall.") player)
+  (cond (= dir 0) (update-in player [:n] inc)
+    (= dir 1) (update-in player [:n] + width)
+    (= dir 3) (update-in player [:n] - width)
+    (= dir 2) (update-in player [:n] dec)
+
+    )))
+)
+
+;respond as per the give instruction or direction
+
+;(println "Passed through can_travel, next is display")
+
+(defn display [player]
+  (let [loc (player :location)
+        east (can_travel player 0)
+        south (can_travel player 1)
+        west (can_travel player 2)
+        north (can_travel player 3)
+        e (can_travel player 0)
+        s (can_travel player 1)
+        w (can_travel player 2)
+        n (can_travel player 3)]
+    (println)
+      (println "=============================")
+      (println (-> the-maze loc :title))
+      (println "=============================")
+       (cond (and (or east e) (or south s) (or west w) (or north n)) (println-typing "You are in an open area." 40)
+        (and (or s south) (or w west) (or n north)) (println-typing "You are at an edge. There is a wall east of you." 40)
+        (and (or e east) (or west w) (or n north)) (println-typing "You are at an edge. There is a wall south of you." 40)
+        (and (or e east) (or s south) (or n north)) (println-typing "You are at an edge. There is a wall west of you." 40)
+        (and (or e east) (or s south) (or w west)) (println-typing "You are at an edge. There is a wall north of you." 40)
+        (and (or e east) (or s south)) (println-typing "You are at a corner. There are walls surrounding north and west." 40)
+        (and (or e east) (or n north)) (println-typing "You are at a corner. There are walls surrounding south and west." 40)
+        (and (or w west) (or s south)) (println-typing "You are at a corner. There are walls surrounding north and east." 40)
+        (and (or w west) (or n north)) (println-typing "You are at a corner. There are walls surrounding south and east." 40)
+        (and (or s south) (or n north)) (println-typing "You are in an alley. Either head north or south" 40)
+        (and (or w west) (or e east)) (println-typing "You are in an alley. Either head east or west." 40)
+        (and (or e east)) (println-typing "You cannot move forward. You are at a dead end." 40)
+        (and (or s south)) (println-typing "You cannot move forward. You are at a dead end." 40)
+        (and (or w west)) (println-typing "You cannot move forward. You are at a dead end." 40)
+        (and (or n north)) (println-typing "You cannot move forward. You are at a dead end." 40)
+        )) player
+)
+
+;(println "Next is print-maze")
 ;Prints out the maze if the player finds the map in the maze
 
 (defn print-maze [maze player]
@@ -191,40 +274,26 @@
   )
   (println "|"))
 
-  (println))
+  (println)
+)
 
+;(println "Out of print-maze, next is respawn")
+;respawns if eaten by a monster
+(defn respawn [player]
+  (let [loc (player :location)
+        n (-> the-maze loc :n)]
+
+        (println-typing "You were eaten by a monster. You are dead!" 10)
+        (println-typing "Do you want to continue or exit? [Type exit/end to end the game or continue to respawn.]" 10)
+        (match (to-keywords (read-line)) 
+        [:exit] (do (assoc-in player [:location] :exit ))
+        [:end] (do (assoc-in player [:location] :exit  ))
+        [:continue] (do (display (assoc-in (assoc-in (assoc-in (assoc-in player [:has-map] false) 
+                          [:has-key] false) [:location] loc) [:n] n))) _ player))
+)
 
 ;this function checks if the player can travel in the maze
-
-(defn can_travel [player dir]
-  (let [loc (player :location)
-        curr_loc (player :n)
-        rightWall (-> the-maze loc :rightWall)
-        downWall (-> the-maze loc :downWall)
-        width (-> the-maze loc :width)
-        height (-> the-maze loc :height)] 
-    (cond (= dir 2) (not (or (= (mod curr_loc width) 0) (= (nth rightWall (- curr_loc 1)) 1)))
-
-    (= dir 0) (not (or (= (mod (+ curr_loc 1) width) 0) (= (nth rightWall curr_loc) 1)))
-
-    (= dir 3) (not (or (< curr_loc width) (= (nth downWall (- curr_loc width)) 1)))
-
-    (= dir 1) (not (or (>= (+ curr_loc width) (* width height)) (= (nth downWall curr_loc) 1)))
-
-    ))
-  ; 0 ->right
-  ; 1 ->down
-  ; 2 ->left
-  ; 3 ->up
-  ; for downWall -check at n
-  ; for upWall - check at n-width
-  ; for leftwall - check at n-1 rightwall
-  ; for rightwall - check at n rightwall
-  ; for left boundaries - check at (n)%width 
-  ; for right boundaries - check at (n+1)%width
-  ; for up boundaries - check n < width
-  ; for down boudaries - check at ?
-)
+;(println "Out of respawn, next is check-hit")
 
 (defn check-hit [maze player]
   (let [loc (player :location)
@@ -238,8 +307,10 @@
                 (recur (+ 1 myIndex)))
                       
             )
-          )(do (print "You are dead") player) player))
-  )
+          )(respawn player) player
+  ))
+)
+
 
 (defn move-monsters [maze player]
   (let [loc (player :location)]
@@ -253,39 +324,10 @@
                     
           )
         )
+  ) 
+)
 
-        ))
-
-(defn display [player]
-  (let [loc (player :location)
-        east (can_travel player 0)
-        south (can_travel player 1)
-        west (can_travel player 2)
-        north (can_travel player 3)
-        e (can_travel player 0)
-        s (can_travel player 1)
-        w (can_travel player 2)
-        n (can_travel player 3)]
-    (println)
-      (println "=============================")
-      (println (-> the-maze loc :title))
-      (println "=============================")
-       (cond (and (or east e) (or south s) (or west w) (or north n)) (println-typing "You are in an open area." 40)
-        (and (or s south) (or w west) (or n north)) (println-typing "You are at an edge. There is a wall east of you." 40)
-        (and (or e east) (or west w) (or n north)) (println-typing "You are at an edge. There is a wall south of you." 40)
-        (and (or e east) (or s south) (or n north)) (println-typing "You are at an edge. There is a wall west of you." 40)
-        (and (or e east) (or s south) (or w west)) (println-typing "You are at an edge. There is a wall north of you." 40)
-        (and (or e east) (or s south)) (println-typing "You are at a corner. There are walls surrounding north and west." 40)
-        (and (or e east) (or n north)) (println-typing "You are at a corner. There are walls surrounding south and west." 40)
-        (and (or w west) (or s south)) (println-typing "You are at a corner. There are walls surrounding north and east." 40)
-        (and (or w west) (or n north)) (println-typing "You are at a corner. There are walls surrounding south and east." 40)
-        (and (or s south) (or n north)) (println-typing "You are in an alley. Either head north or south" 40)
-        (and (or w west) (or e east)) (println-typing "You are in an alley. Either head east or west." 40)
-        (and (or e east)) (println-typing "You cannot move forward. You are at a dead end." 40)
-        (and (or s south)) (println-typing "You cannot move forward. You are at a dead end." 40)
-        (and (or w west)) (println-typing "You cannot move forward. You are at a dead end." 40)
-        (and (or n north)) (println-typing "You cannot move forward. You are at a dead end." 40)
-        )) player)
+;(println "Out of check-hit and move-monster, next is move-to")
 
 (defn move-to [player]
   (let [loc (player :location)
@@ -295,7 +337,7 @@
     (if (= nextmap :exit) (do (the_end) (assoc-in player [:location] nextmap))
 
     (display (assoc-in (assoc-in (assoc-in (assoc-in player [:has-map] false) [:has-key] false) [:location] nextmap) [:n] n))))
-  )
+)
 
 
 (defn status [maze player]
@@ -319,7 +361,7 @@
               (recur (+ 1 myIndex)))
                     
           )
-        )(do (print "You are dead") player)
+        )(respawn player) 
       (and (= keyloc (player :n)) (not (player :has-key))) (do (println-typing "There is a key on the floor." 40) (println 
 "\n  ad8888888888ba
  dP'         `\"8b,
@@ -367,18 +409,9 @@
     )
   
 )
+;(println "Out of moveto and status, next is respond")
 
-(defn go [dir player]
-  (let [loc (player :location)
-        width (-> the-maze loc :width)] 
-  (if (not (can_travel player dir)) (do (println "Can't go there. There is a wall.") player)
-  (cond (= dir 0) (update-in player [:n] inc)
-    (= dir 1) (update-in player [:n] + width)
-    (= dir 3) (update-in player [:n] - width)
-    (= dir 2) (update-in player [:n] dec)
-
-    ))))
-
+;responds as per the instructions
 (defn respond [maze player command]
   (match command
          ; [:look] (update-in player [:seen] #(disj % (-> player :location)))
@@ -394,8 +427,10 @@
          [:use :map] (do (if (player :has-map) (print-maze maze player) (println "You don't have a map yet.")) player)
          _ (do (println "I don't understand you.")
                player)
+    )
+)
 
-         ))
+;(println "Out of all the functions, next is main program")
 
 (defn -main
   "I don't do a whole lot ... yet."
@@ -444,12 +479,17 @@
   (def hero (assoc-in adventurer [:n] ((the-maze (adventurer :location)) :n)))
   (loop [local-maze the-maze
          local-player hero]
+         ;(println "hello")
         (let [pl (check-hit local-maze local-player)
+              ;_ (println "hello2")
               mz (move-monsters local-maze pl)
               pll (status mz pl)
               ]
               (if(not (= (pll :location) :exit))(let [
+              _ (print-maze mz pll)
               _ (println-typing "What do you want to do now?" 20)
           command (read-line)]
           
       (recur mz (respond mz pll (to-keywords command)))) "no" ))))
+
+;(println "Compiled everything, WTF, Hi You are fucked because I am out of main and you still have the problem")
