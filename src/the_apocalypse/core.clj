@@ -112,8 +112,7 @@
           :monstn 1
           :monsters [{:index 0
                     :size 8
-                    :path [17,16,11,6,7,8,13,18]
-                    :alive true}]
+                    :path [17,16,11,6,7,8,13,18]}]
         }
     
     :third_room {:desc "Third room in an unknown building. There are 2 monsters in this maze"
@@ -124,22 +123,24 @@
                           0,0,0,0
                           0,0,0,0]
               :downWall [1,1,1,0
-                         0,0,1,0
-                         0,0,1,0
+                         0,1,1,0
+                         0,1,1,0
                          1,1,1,0
                          0,0,0,0]
               :width 4
               :height 5
-          :exit 0
-          :key 1
+          :exit 16
+          :key 6
           :nextmap :exit
-          :map 16
-          :n 2
-          :monstn 1
+          :map 10
+          :n 0
+          :monstn 2
           :monsters [{:index 0
-                    :size 2
-                    :path [3 4];[16,17,18,19,15,11,15,19,18,17]
-                    :alive true}]
+                    :size 8
+                    :path [19, 15, 11, 7, 3, 7, 11, 15]}
+                    {:index 0
+                    :size 10
+                    :path [14, 13, 12, 8, 4, 5, 4, 8, 12, 13]}]
         }
   }
 )
@@ -161,6 +162,22 @@
     (= dir 3) (not (or (< curr_loc width) (= (nth downWall (- curr_loc width)) 1)))
 
     (= dir 1) (not (or (>= (+ curr_loc width) (* width height)) (= (nth downWall curr_loc) 1)))
+
+    ;northeast
+    (= dir 4) (or (and (can_travel player 3) (not (or (= (mod (+ (- curr_loc width) 1) width) 0) (= (nth rightWall (- curr_loc width)) 1))))
+        (and (can_travel player 0) (not (or (< (+ curr_loc 1) width) (= (nth downWall (- (+ curr_loc 1) width)) 1)))))
+
+    ;southeast
+    (= dir 5) (or (and (can_travel player 1) (not (or (= (mod (+ (+ curr_loc width) 1) width) 0) (= (nth rightWall (+ curr_loc width)) 1))))
+        (and (can_travel player 0) (not (or (>= (+ (+ curr_loc 1) width) (* width height)) (= (nth downWall (+ curr_loc 1)) 1))))) 
+
+    ;southwest
+    (= dir 6) (or (and (can_travel player 1) (not (or (= (mod (+ curr_loc width) width) 0) (= (nth rightWall (- (+ curr_loc width) 1)) 1))))
+        (and (can_travel player 2) (not (or (>= (+ (- curr_loc 1) width) (* width height)) (= (nth downWall (- curr_loc 1)) 1)))))
+
+    ;northwest
+    (= dir 7) (or (and (can_travel player 3) (not (or (= (mod (- curr_loc width) width) 0) (= (nth rightWall (- (- curr_loc width) 1)) 1))))
+        (and (can_travel player 2) (not (or (< (- curr_loc 1) width) (= (nth downWall (- (- curr_loc 1) width)) 1)))))
 
     ))
   ; 0 ->right
@@ -283,14 +300,14 @@
   (let [loc (player :location)
         n (-> the-maze loc :n)]
 
-        (println-typing "You were eaten by a monster. You are dead!" 10)
+        (println-typing "But, you were eaten by a monster. You are dead!" 10)
         (println-typing "Do you want to continue or exit? [Type exit/end to end the game or continue to respawn.]" 10)
         (match (to-keywords (read-line)) 
         [:exit] (do (assoc-in player [:location] :exit ))
         [:end] (do (assoc-in player [:location] :exit  ))
         [:continue] (do (display (assoc-in (assoc-in (assoc-in (assoc-in player [:has-map] false) 
                           [:has-key] false) [:location] loc) [:n] n))) _ player))
-)
+    )
 
 ;this function checks if the player can travel in the maze
 ;(println "Out of respawn, next is check-hit")
@@ -319,8 +336,8 @@
               mz maze] 
           (if (= myIndex (-> mz loc :monstn))
             mz
-            (recur (inc myIndex) (if (= ((nth (-> mz loc :monsters) 0) :index) (- ((nth (-> mz loc :monsters) 0) :size) 1)) 
-              (assoc-in mz [loc :monsters 0 :index] 0) (update-in mz [loc :monsters 0 :index] inc)))
+            (recur (inc myIndex) (if (= ((nth (-> mz loc :monsters) myIndex) :index) (- ((nth (-> mz loc :monsters) myIndex) :size) 1)) 
+              (assoc-in mz [loc :monsters myIndex :index] 0) (update-in mz [loc :monsters myIndex :index] inc)))
                     
           )
         )
@@ -412,6 +429,16 @@
 ;(println "Out of moveto and status, next is respond")
 
 ;responds as per the instructions
+(defn go [dir player]
+  (let [loc (player :location)
+        width (-> the-maze loc :width)] 
+  (if (not (can_travel player dir)) (do (println "Can't go there. There is a wall.") player)
+  (cond (= dir 0) (update-in player [:n] inc)
+    (= dir 1) (update-in player [:n] + width)
+    (= dir 3) (update-in player [:n] - width)
+    (= dir 2) (update-in player [:n] dec)
+    ))))
+
 (defn respond [maze player command]
   (match command
          ; [:look] (update-in player [:seen] #(disj % (-> player :location)))
@@ -431,6 +458,47 @@
 )
 
 ;(println "Out of all the functions, next is main program")
+
+(defn report-monster [maze player]
+  (let [loc (player :location)
+    n (player :n)
+    monster (-> maze loc :monsters)
+    monstn (-> maze loc :monstn)
+    width (-> maze loc :width)]
+
+    (doseq [i (range monstn)]
+      (cond 
+        ;east
+        (and (can_travel player 0) (= (- (nth ((nth monster i) :path) ((nth monster i) :index)) (player :n)) 2)) (println "WARNING: There is a monster east of you")
+        (and (can_travel player 0) (= (- (nth ((nth monster i) :path) ((nth monster i) :index)) (player :n)) 1))(println "WARNING: Run!! There is a monster east of you")
+
+        ;south
+        (and (can_travel player 1) (= (- (nth ((nth monster i) :path) ((nth monster i) :index)) (player :n)) (* 2 width)))(println "WARNING: There is a monster south of you")
+        (and (can_travel player 1) (= (- (nth ((nth monster i) :path) ((nth monster i) :index)) (player :n)) width)) (println "WARNING: Run!! There is a monster south of you")
+
+        ;west
+        (and (can_travel player 2) (= (- (nth ((nth monster i) :path) ((nth monster i) :index)) (player :n)) -2)) (println "WARNING: There is a monster west of you")
+        (and (can_travel player 2) (= (- (nth ((nth monster i) :path) ((nth monster i) :index)) (player :n)) -1)) (println "WARNING: Run!! There is a monster west of you")
+        
+        ;north
+        (and (can_travel player 3) (= (- (nth ((nth monster i) :path) ((nth monster i) :index)) (player :n)) (* -2 width))) (println "WARNING: There is a monster north of you")
+        (and (can_travel player 3) (= (- (nth ((nth monster i) :path) ((nth monster i) :index)) (player :n)) (* -1 width))) (println "WARNING: Run!! There is a monster east of you")
+
+        ;northeast
+        (and (can_travel player 4) (= (- (nth ((nth monster i) :path) ((nth monster i) :index)) (player :n)) (+ (* -1 width) 1))) (println "WARNING: There is a monster northeast of you")
+
+        ;northwest
+        (and (can_travel player 7) (= (- (nth ((nth monster i) :path) ((nth monster i) :index)) (player :n)) (- (* -1 width) 1))) (println "WARNING: There is a monster northwest of you")
+
+        ;southeast
+        (and (can_travel player 5) (= (- (nth ((nth monster i) :path) ((nth monster i) :index)) (player :n)) (+ width 1))) (println "WARNING: There is a monster southeast of you")
+        
+        ;southwest
+        (and (can_travel player 6) (= (- (nth ((nth monster i) :path) ((nth monster i) :index)) (player :n)) (- width 1))) (println "WARNING: There is a monster southwest of you")
+
+        
+        )
+    )))
 
 (defn -main
   "I don't do a whole lot ... yet."
@@ -486,7 +554,8 @@
               pll (status mz pl)
               ]
               (if(not (= (pll :location) :exit))(let [
-              _ (print-maze mz pll)
+                _ (print-maze mz pll)
+              _ (report-monster mz pll)
               _ (println-typing "What do you want to do now?" 20)
           command (read-line)]
           
