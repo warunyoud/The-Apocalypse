@@ -46,6 +46,32 @@
 
 
 (defn the_end []
+  (println-typing "Congratulations! You have found the Spaceship back to Earth." 20)
+  (println
+    "
+                        ___\\____
+                       0)__/... \\_
+                      00)__)  .___)
+     ___              _0__)\\_/ OOO/`':.
+    0)_^'-._    __..-'`:  \\ | / ::  \\ o`:
+    0)_\\ \\~_..-': \\ \\   :  \\|/   ::  |   \\
+        \\ /      : | |  :    :  ::  /  _./>-
+         (__ ))): /_/____.))_____//.-'`
+          7 7~~''''            7 7
+          L_L                 / /
+         0) ^'-.__            |_|
+         0)__.-'             0) ^'-.__
+                             0)__.-'
+
+    ")
+  (println)
+  (println)
+  (println "Good")
+
+  (println "
+
+    ")
+  ()
   (println-typing 
     "
  /$$$$$$$$ /$$   /$$ /$$$$$$$$       /$$$$$$$$ /$$   /$$ /$$$$$$$ 
@@ -58,14 +84,14 @@
    |__/   |__/  |__/|________/      |________/|__/  \\__/|_______/ 
                                                                                                           
 " 10)
-(println-typing "Thank you for playing!" 20))
+(println-typing "Thank you for playing!" 15))
 
 ;player definition
 
 (def adventurer
   {:location :third_room
-   :has-key false
-   :has-map false
+   :has-key true
+   :has-map true
    :n 0})
 
 (defn to-keywords [commands]
@@ -317,7 +343,62 @@
   (let [loc (player :location)
         n (-> the-maze loc :n)]
 
-        (println-typing "But, you were eaten by a monster. You are dead!" 10)
+        (println-typing "But, you were eaten by a monster. You are dead!" 20)
+
+        (println)
+        (println)
+
+        (println"
+                                           ,---._
+                                         ,~~,-._  `._
+                                          v'~   `-.  `.
+                                               _,- ~.  \\
+                                             .'  ,--`.  `\\_
+                                             V-'~ ,'~~~`-. `-.
+                                 ___             /_/~~~) ` `. `._
+                        ____,---'   ;            V     `.__ `--, `;
+                         `-._    ;  `.                ____)       :
+                             `.;  ; .'              ,'        _    |
+                              ; |   ;              ,';'~~~`--' `;  :
+                             ,': .-'               `,'  __ __   :  |
+                             )_  `-, ___     __        (__:__)   ; ;
+                        _,---. \\___,'` ~`---;  `-.       |||    ;  ;
+                    _,-/   :;     !   `     `|    `-.   |~~~~|   ; :
+                _,-' /~   .,'  ;  !!  `..    ``.    `.  :    ;  | :
+              ,'  ,-'    .;   `; !!   _,'-' ,--._    ====\\__/===: `.
+            .'  ,-'   ,--.  ~~`-. !!  ~    ,'    `     `./  \\   |  |
+           .'  :;   ,'    \\        !: .   ;--.__   `;.  |. ~.|   : ;
+          .'  ,;    ' ,-'~~`-.     ,!  ;-'     #;   `;. \\____/  : `.
+         .'  ,;      /__      `-._,'!!( _(0'~~`-'    `;.  `.     ; ;
+        .'  ,;    ,'    `---._(0))  !! ~   _,-,        `;  `.   ;  :
+        ;  ,;    ,' ;;-.__,-._~~~   !!__,--::::|.      `;:  :   `; )
+        ;  :|   ,'  ;/;;; :::;;;;----'|:: |::;\\/#.      `;  |    ) ;
+        :  |:  ,'  ,' :/  :;; \\/))):;;::/  ::' ##:      ;;  ;    ; |
+        |  :|  :;  :      `'    \\/ \\/ `'   `'  ##;      ;  .'  ,'  ;
+        :  |;  || .'        ;\\.   ____ __,--._ ##;     ;' .'--'   ;
+    _,--`. `.  :: `./;   /\\/;:;,-'    `-.     `--.__     .'~   ,'~
+   /     ;. `; ``. :::;\\;.-'~~`./~~\\/\\ ..    _  :::  --. ' ,-'~
+  /    .  `. `; `   ~~~ ;~      ~~~~~~`--.__~~`-. :::   ) ~
+ /'    ;`--`. `. `.    :;      `;       ;   `---`._    ,'
+ `.  \\/      `-.` `_,_ `:,-'-. `.      :_,_    ;   `--'
+  `.  `.        ` (___)-: ( ) :--,-'- -(___),'~~~`.
+   {_  `.               `.___.' ( ; ;)      :((:)):
+     `.  `                       `--'       `.___.'
+       `. `.                 ;;:::;
+        `-  `.              ;;;. .;
+          `-. `.__        \\;;; - ;; //
+             `. ` `--..___ \\,--v-, //
+               `--._   ~~~~~`)____(//
+                    )    ~~   ~~~~~~;
+                    `.    ~~  ------;
+                     `.~~_   ______,'
+                      `. `.--';: |:
+                       ;  `. Cc; Cc
+                       `.  ;  __
+                        `. `-'  ~\\
+                         `-.__,--'~")
+        (println)
+        (println)
         (println-typing "Do you want to continue or exit? [Type exit/end to end the game or continue to respawn.]" 10)
         (match (to-keywords (read-line)) 
         [:exit] (do (assoc-in player [:location] :exit ))
@@ -403,7 +484,7 @@
                     
           )
         )(respawn player) 
-      (and (= keyloc (player :n)) (not (player :has-key))) (do (println-typing "There is a key on the floor." 40) (println 
+      (and (= keyloc (player :n)) (not (player :has-key))) (do (println-typing "There is a key on the floor." 20) (println 
 "\n  ad8888888888ba
  dP'         `\"8b,
  8  ,aaa,       \"Y888a     ,aaaa,     ,aaa,  ,aa,
@@ -414,11 +495,11 @@
  Yb,         ,ad8\"    
   \"Y8888888888P\"\n") (println-typing "Do you want to take it? (y/n)" 20) 
       (match (to-keywords (read-line)) 
-        [:yes] (do (println-typing "Key taken!" 40) (assoc-in player [:has-key] true))
-        [:y] (do (println-typing "Key taken!" 40) (assoc-in player [:has-key] true))
+        [:yes] (do (println-typing "Key taken!" 20) (assoc-in player [:has-key] true))
+        [:y] (do (println-typing "Key taken!" 20) (assoc-in player [:has-key] true))
         _ player))
 
-    (and (= maploc (player :n)) (not (player :has-map))) (do (println-typing "There is a map on the floor." 40)(println     
+    (and (= maploc (player :n)) (not (player :has-map))) (do (println-typing "There is a map on the floor." 20)(println     
 "     
      _____________________________________________
 ()==(                                            (@==()
@@ -437,17 +518,17 @@
 
       (println-typing "Do you want to take it? (y/n)" 20) 
       (match (to-keywords (read-line)) 
-        [:yes] (do (println-typing "You have obtained a map! to use the map type 'use map'" 40)(assoc-in player [:has-map] true))
-        [:y] (do (println-typing "You have obtained a map! to use the map type 'use map'" 40)(assoc-in player [:has-map] true))
+        [:yes] (do (println-typing "You have obtained a map! to use the map type 'use map'" 20)(assoc-in player [:has-map] true))
+        [:y] (do (println-typing "You have obtained a map! to use the map type 'use map'" 20)(assoc-in player [:has-map] true))
         _ player))
 
-     (= exitloc (player :n)) (do (println "You have found the EXIT!!") (println "Do you want to open it? (y/n)") (match (to-keywords (read-line)) 
+     (= exitloc (player :n)) (do (println-typing "You have found the EXIT!!" 20) (println-typing "Do you want to open it? (y/n)" 20) (match (to-keywords (read-line)) 
         [:yes] (do (if (player :has-key) 
-          (do (println "You have used your key to unlock the exit door.") (move-to player))
-          (do (println "It's locked!") player)))
+          (do (println-typing "You have used your key to unlock the exit door." 20) (move-to player))
+          (do (println-typing "It's locked!" 20) player)))
         [:y] (do (if (player :has-key) 
-          (do (println "You have used your key to unlock the exit door.") (move-to player))
-          (do (println "It's locked!") player)))
+          (do (println-typing "You have used your key to unlock the exit door." 20) (move-to player))
+          (do (println-typing "It's locked!" 20) player)))
         _ player))
      :else player)
   ;   (when-not ((player :seen) location)
@@ -536,43 +617,43 @@
   (println)
 
 
-  (println-typing " 
+;   (println-typing " 
 
- ___      ___           __                                    __          
-/   \\    /   \\  ____   |  |   ____   ____   _____   ____    _/  |_   ___  
-\\    \\/\\/   /  / __ \\  |  |  / ___\\ /  _ \\ /     \\_/  __\\  |      \\ /  _ \\ 
- \\         /  \\  ___/  |  |_ \\ \\__  ( <_> )  Y Y  \\  ___/    |  |  (  <_> )
-  \\__/\\   /    \\___ >  |____/ \\___ > ____/ |__| _| /\\___ >   |__|   \\____/ 
-       \\_/        \\/             \\/              \\/   \\/                " 5)
+;  ___      ___           __                                    __          
+; /   \\    /   \\  ____   |  |   ____   ____   _____   ____    _/  |_   ___  
+; \\    \\/\\/   /  / __ \\  |  |  / ___\\ /  _ \\ /     \\_/  __\\  |      \\ /  _ \\ 
+;  \\         /  \\  ___/  |  |_ \\ \\__  ( <_> )  Y Y  \\  ___/    |  |  (  <_> )
+;   \\__/\\   /    \\___ >  |____/ \\___ > ____/ |__| _| /\\___ >   |__|   \\____/ 
+;        \\_/        \\/             \\/              \\/   \\/                " 5)
 
 
-  (println-typing "                              
- _________________________________________________________________________
-|                                                                         |
-|         === = = ===   .-. .-. .=. .== .-. .  '. .' .--. .-= .==         |
-|          |  |=| |=    |=| |=' | | |   |=| |    |   |--' `-. |=          |
-|          =  = = ===   = = =   `=' `== = = `==  =   =    =-' `==         |
-|_________________________________________________________________________|" 
-5)
-  (println)
+;   (println-typing "                              
+;  _________________________________________________________________________
+; |                                                                         |
+; |         === = = ===   .-. .-. .=. .== .-. .  '. .' .--. .-= .==         |
+; |          |  |=| |=    |=| |=' | | |   |=| |    |   |--' `-. |=          |
+; |          =  = = ===   = = =   `=' `== = = `==  =   =    =-' `==         |
+; |_________________________________________________________________________|" 
+; 5)
+;   (println)
 
-(println-typing "                        
- _____________________________________________________________________________
-|                                                                             |
-| The Apocalypse is a game of adventure, danger and monsters.                 |
-| In this world you will explore some of the most amazing puzzles             |
-| and mazes ever seen by mortal man.                                          |
-|                                                                             |
-| In Apocalypse the intrepid explorer finds himself in a lost labyrinth       |
-| of another world, searching for a door that will take him back              |
-| to his own world, his loved ones. But to find this door,                    |
-| the adventurer has to go through different mazes filled with                |
-| unknown creatures and traps!                                                |
-|                                                                             |
-| This game has been created by Shashank Bansal and Boom Dej-Udom.            |
-| Have fun! and let us know if you have any feedback at sbansal6@illinois.edu |
-| or dejudom2@illinois.edu.                                                   |
-|_____________________________________________________________________________|" 10)
+; (println-typing "                        
+;  _____________________________________________________________________________
+; |                                                                             |
+; | The Apocalypse is a game of adventure, danger and monsters.                 |
+; | In this world you will explore some of the most amazing puzzles             |
+; | and mazes ever seen by mortal man.                                          |
+; |                                                                             |
+; | In Apocalypse the intrepid explorer finds himself in a lost labyrinth       |
+; | of another world, searching for a door that will take him back              |
+; | to his own world, his loved ones. But to find this door,                    |
+; | the adventurer has to go through different mazes filled with                |
+; | unknown creatures and traps!                                                |
+; |                                                                             |
+; | This game has been created by Shashank Bansal and Boom Dej-Udom.            |
+; | Have fun! and let us know if you have any feedback at sbansal6@illinois.edu |
+; | or dejudom2@illinois.edu.                                                   |
+; |_____________________________________________________________________________|" 5)
   
   (def hero (assoc-in adventurer [:n] ((the-maze (adventurer :location)) :n)))
   (println)
