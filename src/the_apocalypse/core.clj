@@ -66,7 +66,6 @@
     ")
   (println)
   (println)
-  (println "Good")
 
   (println "
 
@@ -89,9 +88,9 @@
 ;player definition
 
 (def adventurer
-  {:location :third_room
-   :has-key true
-   :has-map true
+  {:location :first_room
+   :has-key false
+   :has-map false
    :n 0})
 
 (defn to-keywords [commands]
@@ -617,43 +616,43 @@
   (println)
 
 
-;   (println-typing " 
+  (println-typing " 
 
-;  ___      ___           __                                    __          
-; /   \\    /   \\  ____   |  |   ____   ____   _____   ____    _/  |_   ___  
-; \\    \\/\\/   /  / __ \\  |  |  / ___\\ /  _ \\ /     \\_/  __\\  |      \\ /  _ \\ 
-;  \\         /  \\  ___/  |  |_ \\ \\__  ( <_> )  Y Y  \\  ___/    |  |  (  <_> )
-;   \\__/\\   /    \\___ >  |____/ \\___ > ____/ |__| _| /\\___ >   |__|   \\____/ 
-;        \\_/        \\/             \\/              \\/   \\/                " 5)
+ ___      ___           __                                    __          
+/   \\    /   \\  ____   |  |   ____   ____   _____   ____    _/  |_   ___  
+\\    \\/\\/   /  / __ \\  |  |  / ___\\ /  _ \\ /     \\_/  __\\  |      \\ /  _ \\ 
+ \\         /  \\  ___/  |  |_ \\ \\__  ( <_> )  Y Y  \\  ___/    |  |  (  <_> )
+  \\__/\\   /    \\___ >  |____/ \\___ > ____/ |__| _| /\\___ >   |__|   \\____/ 
+       \\_/        \\/             \\/              \\/   \\/                " 5)
 
 
-;   (println-typing "                              
-;  _________________________________________________________________________
-; |                                                                         |
-; |         === = = ===   .-. .-. .=. .== .-. .  '. .' .--. .-= .==         |
-; |          |  |=| |=    |=| |=' | | |   |=| |    |   |--' `-. |=          |
-; |          =  = = ===   = = =   `=' `== = = `==  =   =    =-' `==         |
-; |_________________________________________________________________________|" 
-; 5)
-;   (println)
+  (println-typing "                              
+ _________________________________________________________________________
+|                                                                         |
+|         === = = ===   .-. .-. .=. .== .-. .  '. .' .--. .-= .==         |
+|          |  |=| |=    |=| |=' | | |   |=| |    |   |--' `-. |=          |
+|          =  = = ===   = = =   `=' `== = = `==  =   =    =-' `==         |
+|_________________________________________________________________________|" 
+5)
+  (println)
 
-; (println-typing "                        
-;  _____________________________________________________________________________
-; |                                                                             |
-; | The Apocalypse is a game of adventure, danger and monsters.                 |
-; | In this world you will explore some of the most amazing puzzles             |
-; | and mazes ever seen by mortal man.                                          |
-; |                                                                             |
-; | In Apocalypse the intrepid explorer finds himself in a lost labyrinth       |
-; | of another world, searching for a door that will take him back              |
-; | to his own world, his loved ones. But to find this door,                    |
-; | the adventurer has to go through different mazes filled with                |
-; | unknown creatures and traps!                                                |
-; |                                                                             |
-; | This game has been created by Shashank Bansal and Boom Dej-Udom.            |
-; | Have fun! and let us know if you have any feedback at sbansal6@illinois.edu |
-; | or dejudom2@illinois.edu.                                                   |
-; |_____________________________________________________________________________|" 5)
+(println-typing "                        
+ _____________________________________________________________________________
+|                                                                             |
+| The Apocalypse is a game of adventure, danger and monsters.                 |
+| In this world you will explore some of the most amazing puzzles             |
+| and mazes ever seen by mortal man.                                          |
+|                                                                             |
+| In Apocalypse the intrepid explorer finds himself in a lost labyrinth       |
+| of another world, searching for a door that will take him back              |
+| to his own world, his loved ones. But to find this door,                    |
+| the adventurer has to go through different mazes filled with                |
+| unknown creatures and traps!                                                |
+|                                                                             |
+| This game has been created by Shashank Bansal and Boom Dej-Udom.            |
+| Have fun! and let us know if you have any feedback at sbansal6@illinois.edu |
+| or dejudom2@illinois.edu.                                                   |
+|_____________________________________________________________________________|" 5)
   
   (def hero (assoc-in adventurer [:n] ((the-maze (adventurer :location)) :n)))
   (println)
