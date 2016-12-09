@@ -14,6 +14,6 @@ Make sure you have Leinengen installed on your computer.
 For instructions to install leiningen go to http://leiningen.org/
 
 This game has been created by Shashank Bansal and Boom Dej-Udom in Clojure.
-Have fun! and let us know if you have any feedback at sbansal6@illinois.edu.
+Have fun! and let us know if you have any feedback at sbansal6@illinois.edu or dejudom2@illinois.edu.
 
 P.S. If you want to learn Clojure go to http://clojure.org/
